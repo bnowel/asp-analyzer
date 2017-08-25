@@ -2,7 +2,7 @@
   "name": "asp-analyzer",
   "version": "1.0.0",
   "description": "",
-  "repository":{},
+  "repository": {},
   "license": "UNLICENSED",
   "devDependencies": {
     "grunt": "0.4.5",
@@ -12,5 +12,21 @@
     "load-grunt-config": "0.19.2",
     "load-grunt-tasks": "*",
     "rimraf": "2.5.4"
-  }
+  },
+  "main": "start.js",
+  "dependencies": {
+    "count-lines-in-file": "^1.1.0",
+    "glob": "^7.1.2",
+    "grunt": "^0.4.5",
+    "grunt-execute": "^0.2.2",
+    "grunt-concurrent": "^2.3.1",
+    "jit-grunt": "^0.10.0",
+    "load-grunt-config": "^0.19.2",
+    "load-grunt-tasks": "^3.5.2",
+    "rimraf": "^2.5.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": ""
 }
