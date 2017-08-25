@@ -1,3 +1,8 @@
+# Files generated from running start.js
+allFiles.json
+fileStats.json
+statsDict.json
+
 # Logs
 logs
 *.log

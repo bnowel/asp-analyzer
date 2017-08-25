@@ -28,17 +28,22 @@ if (!pathArg) {
 }
 
 var resolvedPath = pathModule.resolve(pathArg);
-var analysisRoot = resolvedPath + path.sep;
+var analysisRoot = (resolvedPath + path.sep).toLowerCase();
 console.log("Analyzing: " + analysisRoot);
+
+var allFiles = [];
 
 // Make sure to use forward slashes in glob expressions (Even on Windows). https://github.com/isaacs/node-glob 
 globAsync(pathArg + "/**/*.asp", globOptions)
     .catch(console.log)
     // Write to a json file for testing
-    .then((files) => {fs.writeFileSync("allFiles.json", JSON.stringify(files, null, 2)); return files; })
+    .then((files) => {var lowCaseFiles = files.map(function(file) {return file.toLowerCase()}); allFiles = lowCaseFiles; fs.writeFileSync("allFiles.json", JSON.stringify(lowCaseFiles, null, 2)); return lowCaseFiles; })
     .then((files)=>Promise.all(files.map(buildFileStats)))
+    // Write to a json file for testing
+    .then((files) => {fs.writeFileSync("fileStats.json", JSON.stringify(files, null, 2)); return files; })
     .then((data)=>{return convertArray(data);})
-
+    // Write to a json file for testing
+    .then((files) => {fs.writeFileSync("statsDict.json", JSON.stringify(files, null, 2)); return files; })
     .then((data)=>{jsonStats = data; return data;})
     .then((data)=>{return treeBuilder.buildDictTree(data)})
     .then((data)=> console.log(JSON.stringify(data, null, 2)));
@@ -48,6 +53,7 @@ function buildFileStats(file) {
 
     return new Promise(function(resolve, reject){
         clifAsync(file).then((num) => {
+
             fs.readFile(file, function(err, data){
                 let m;
                 let includes = [];
@@ -56,8 +62,18 @@ function buildFileStats(file) {
                 if ((m = regex.exec(data)) !== null) {
                     m.forEach((match, groupIndex) => {
                         if (groupIndex === 3) {
-                            let incFile = pathModule.resolve(dirname, match).replace(analysisRoot, "")
-                            includes.push(incFile)
+                            let fullIncFile = match.startsWith("/") ? pathModule.resolve(analysisRoot, match.substring(1)) : pathModule.resolve(dirname, match)
+                            let incFile = fullIncFile.toLowerCase().replace(analysisRoot, "")
+                            
+                            // Make sure that the reference we resolve exists on the filesystem
+                            var fileExists = allFiles.find(x => x == fullIncFile.toLowerCase());
+                            if (fileExists) {
+                                // Add only valid includes
+                                includes.push(incFile)
+                            }
+                            else {
+                                console.warn("[" + file + "]\n\t" + match + " Can't find: " + fullIncFile);
+                            }
                         }
                     });
                 }
