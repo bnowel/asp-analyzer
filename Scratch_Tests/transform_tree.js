@@ -53,7 +53,7 @@ var expectedTree = [
 
 var treeModule = require("../transform_tree.js");
 
-var actualTree = treeModule().buildTree(sampleStats1);
+var actualTree = treeModule.buildTree(sampleStats1);
 
 //buildTree(sampleStats1)
 var expectedString = JSON.stringify(expectedTree);
