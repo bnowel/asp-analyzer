@@ -2,12 +2,12 @@ const parseArgs = require('minimist')
 const pathModule = require('path');
 const clif = require('count-lines-in-file');
 const fs = require('fs');
-const glob = require("glob")
-const treeBuilder = require("./transform_tree.js")
+const glob = require("glob");
+const treeBuilder = require("./transform_tree.js");
+const path = require("path");
 
-
-const argOpts = {string:["path"]}
-const globOptions = {realpath:true};
+const argOpts = {string: ["path"]}
+const globOptions = {realpath: true};
 const regex = /((<!--\s*#include\s+\w+\s*=\s*")(.+.asp)("\s*-->))/;
 
 /*  command line arg options
@@ -21,62 +21,80 @@ const regex = /((<!--\s*#include\s+\w+\s*=\s*")(.+.asp)("\s*-->))/;
 */
 var argv = parseArgs(process.argv.slice(2), argOpts)
 
-var path = argv.path;
-if (!path){
+var pathArg = argv.path;
+if (!pathArg) {
     console.error("--path is required");
     return;
 }
 
-var resolvedPath = pathModule.resolve(path);
-var analysisRoot = resolvedPath + "/";
-console.log("Analyzing :" + analysisRoot);
+var resolvedPath = pathModule.resolve(pathArg);
+var analysisRoot = resolvedPath + path.sep;
+console.log("Analyzing: " + analysisRoot);
 
-globAsync(path+"/**/*.asp", globOptions)
+// Make sure to use forward slashes in glob expressions (Even on Windows). https://github.com/isaacs/node-glob 
+globAsync(pathArg + "/**/*.asp", globOptions)
     .catch(console.log)
+    // Write to a json file for testing
+    .then((files) => {fs.writeFileSync("allFiles.json", JSON.stringify(files, null, 2)); return files; })
     .then((files)=>Promise.all(files.map(buildFileStats)))
+    .then((data)=>{return convertArray(data);})
+
     .then((data)=>{jsonStats = data; return data;})
-    .then((data)=>{return treeBuilder.buildTree(data)})
-    .then((data)=> console.log(JSON.stringify(data,null,2)));
+    .then((data)=>{return treeBuilder.buildDictTree(data)})
+    .then((data)=> console.log(JSON.stringify(data, null, 2)));
 
 
-function buildFileStats(file)
-{
-    return new Promise(function(resolve,reject){
+function buildFileStats(file) {
+
+    return new Promise(function(resolve, reject){
         clifAsync(file).then((num) => {
-            fs.readFile(file,function(err,data){
+            fs.readFile(file, function(err, data){
                 let m;
                 let includes = [];
                 let dirname = pathModule.dirname(file)
-                let filename = file.replace(analysisRoot,"")
+                let filename = file.replace(analysisRoot, "")
                 if ((m = regex.exec(data)) !== null) {
                     m.forEach((match, groupIndex) => {
-                        if (groupIndex === 3){
-                            let incFile = pathModule.resolve(dirname,match).replace(analysisRoot,"")
+                        if (groupIndex === 3) {
+                            let incFile = pathModule.resolve(dirname, match).replace(analysisRoot, "")
                             includes.push(incFile)
                         }
                     });
                 }
-                resolve({name:filename,loc:num,inc:includes})
+                resolve({name: filename, loc: num, inc: includes})
             });
         });
     });
 }
 
+function convertArray(array) {
+    var obj = {};
+
+    array.map(function(elem) {
+        doElemWork(elem, obj);
+    });
+
+    return obj;
+}
+
+function doElemWork(elem, obj) {
+    obj[elem.name] = {inc: elem.inc, loc: elem.loc};
+}
 
 
 function globAsync(pattern, options){
-    return new Promise(function(resolve,reject){
-        glob(pattern, options, function(err, files){
-             if(err !== null) return reject(err);
+    return new Promise(function(resolve, reject) {
+        glob(pattern, options, function(err, files) {
+             if (err !== null) return reject(err);
              resolve(files);
         });
     });
 }
 
 
-function clifAsync(file){
-    return new Promise(function(resolve,reject){
-         clif(file,function(err,number){
+function clifAsync(file) {
+    return new Promise(function(resolve, reject) {
+         clif(file, function(err, number) {
              if(err !== null) return reject(err);
              resolve(number);
          });

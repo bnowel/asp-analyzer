@@ -56,42 +56,60 @@ var treeModule = function(opts) {
 
         var fileStats = {}; 
         var treeCache = {}
-        function buildTree(topDeps)
-        {
-            fileStats = topDeps;
-            var tree = topDeps.map(buildIndividualTree);
-            return tree;
-        }
         
-        function buildIndividualTree(fileStat,i,depsArr)
+        var statsDict = {};
+
+        // function buildTree(topDeps)
+        // {
+        //     fileStats = topDeps;
+        //     var tree = topDeps.map(buildIndividualTree);
+        //     return tree;
+        // }
+        
+        function buildDictTree(stats) {
+            statsDict = stats;
+            
+            for (var file in stats) {
+               if (stats.hasOwnProperty(file)) {
+                    buildIndividualTree(file, stats[file].inc);
+                }
+            }
+
+            return treeCache;
+        }
+
+        function buildIndividualTree(file, incArray)
         {
-            if ( treeCache.hasOwnProperty(fileStat.name) ){
-                return treeCache[fileStat.name];
+            if (treeCache.hasOwnProperty(file)) {
+                //TODO: Bump the refcount
+
+                return treeCache[file];
             }
-            var obj = {
-                name:fileStat.name,
-                inc:fileStat.inc
+
+            var obj = {};
+
+            for (var i=0; i < incArray.length; i++) {
+                var key = incArray[i];
+
+                obj[key] = buildIndividualTree(key, statsDict[key].inc);
             }
-            if (fileStat.inc.length != 0){
-                //build out obj
-                obj.inc = fileStat.inc.map(
-                    function(incName){
-                        var stat = lookupStats(incName);
-                        return buildIndividualTree(stat);
-                    }
-                );
-            }
-            treeCache[fileStat.name] = obj;
+
+            treeCache[file] = obj;
+
             return obj;
         }
         
         function lookupStats(fileName) {
-            var stats =  fileStats.find(x=>x.name == fileName)
+            var stats =  fileStats.find(x=>x.name == fileName);
+            if (!stats) 
+                console.log(fileName);
+
             return stats;
         }
     
         return {
-            buildTree:buildTree
+            //buildTree: buildTree,
+            buildDictTree: buildDictTree
         }
     }
 
