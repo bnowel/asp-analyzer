@@ -8,7 +8,7 @@ const path = require("path");
 
 const argOpts = {string: ["path"]}
 const globOptions = {realpath: true};
-const regex = /((<!--\s*#include\s+\w+\s*=\s*")(.+.asp)("\s*-->))/;
+const regex = /((<!--\s*#include\s+\w+\s*=\s*")(.+.asp)("\s*-->))/g;
 
 /*  command line arg options
     opts.string - a string or array of strings argument names to always treat as strings
@@ -46,7 +46,9 @@ globAsync(pathArg + "/**/*.asp", globOptions)
     .then((files) => {fs.writeFileSync("statsDict.json", JSON.stringify(files, null, 2)); return files; })
     .then((data)=>{jsonStats = data; return data;})
     .then((data)=>{return treeBuilder.buildDictTree(data)})
-    .then((data)=> console.log(JSON.stringify(data, null, 2)));
+    // Write to a json file for testing
+    .then((data)=> {fs.writeFileSync("tree.json", JSON.stringify(data, null, 2)); return data; });
+    //.then((data)=> console.log(JSON.stringify(data, null, 2)));
 
 
 function buildFileStats(file) {
@@ -59,23 +61,20 @@ function buildFileStats(file) {
                 let includes = [];
                 let dirname = pathModule.dirname(file)
                 let filename = file.replace(analysisRoot, "")
-                if ((m = regex.exec(data)) !== null) {
-                    m.forEach((match, groupIndex) => {
-                        if (groupIndex === 3) {
-                            let fullIncFile = match.startsWith("/") ? pathModule.resolve(analysisRoot, match.substring(1)) : pathModule.resolve(dirname, match)
-                            let incFile = fullIncFile.toLowerCase().replace(analysisRoot, "")
-                            
-                            // Make sure that the reference we resolve exists on the filesystem
-                            var fileExists = allFiles.find(x => x == fullIncFile.toLowerCase());
-                            if (fileExists) {
-                                // Add only valid includes
-                                includes.push(incFile)
-                            }
-                            else {
-                                console.warn("[" + file + "]\n\t" + match + " Can't find: " + fullIncFile);
-                            }
-                        }
-                    });
+                while ((m = regex.exec(data)) !== null) {
+                    let match = m[3];
+                    let fullIncFile = match.startsWith("/") ? pathModule.resolve(analysisRoot, match.substring(1)) : pathModule.resolve(dirname, match)
+                    let incFile = fullIncFile.toLowerCase().replace(analysisRoot, "")
+                    
+                    // Make sure that the reference we resolve exists on the filesystem
+                    var fileExists = allFiles.find(x => x == fullIncFile.toLowerCase());
+                    if (fileExists) {
+                        // Add only valid includes
+                        includes.push(incFile)
+                    }
+                    else {
+                        console.warn("[" + file + "] '" + match + "'\n\tCan't find: " + fullIncFile);
+                    }
                 }
                 resolve({name: filename, loc: num, inc: includes})
             });

@@ -2,6 +2,7 @@
 allFiles.json
 fileStats.json
 statsDict.json
+tree.json
 
 # Logs
 logs
