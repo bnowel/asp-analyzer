@@ -13,7 +13,7 @@ globAsync(path+"/**/*.asp", options)
     .then((files)=>Promise.all(files.map(buildFileStats)))
     .then((data)=>{jsonStats = data; return data;})
 
-
+    
     .then((data)=>console.log(data));
 
 
