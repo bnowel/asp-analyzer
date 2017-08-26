@@ -32,6 +32,7 @@ var analysisRoot = (resolvedPath + path.sep).toLowerCase();
 console.log("Analyzing: " + analysisRoot);
 
 var allFiles = [];
+var totalStatsDict = {};
 
 // Make sure to use forward slashes in glob expressions (Even on Windows). https://github.com/isaacs/node-glob 
 globAsync(pathArg + "/**/*.asp", globOptions)
@@ -43,7 +44,7 @@ globAsync(pathArg + "/**/*.asp", globOptions)
     .then((files) => {fs.writeFileSync("fileStats.json", JSON.stringify(files, null, 2)); return files; })
     .then((data)=>{return convertArray(data);})
     // Write to a json file for testing
-    .then((files) => {fs.writeFileSync("statsDict.json", JSON.stringify(files, null, 2)); return files; })
+    .then((files) => {totalStatsDict = files; fs.writeFileSync("statsDict.json", JSON.stringify(files, null, 2)); return files; })
     .then((data)=>{jsonStats = data; return data;})
     .then((data)=>{return treeBuilder.buildDictTree(data)})
     // Write to a json file for testing

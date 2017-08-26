@@ -59,12 +59,6 @@ var treeModule = function(opts) {
         
         var statsDict = {};
 
-        // function buildTree(topDeps)
-        // {
-        //     fileStats = topDeps;
-        //     var tree = topDeps.map(buildIndividualTree);
-        //     return tree;
-        // }
         
         function buildDictTree(stats) {
             statsDict = stats;
@@ -82,7 +76,7 @@ var treeModule = function(opts) {
         {
             if (treeCache.hasOwnProperty(file)) {
                 //TODO: Bump the refcount
-
+                console.log(file + ": ", treeCache[file]);
                 return treeCache[file];
             }
 
