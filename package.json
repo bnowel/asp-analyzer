@@ -21,6 +21,7 @@
     "grunt-concurrent": "^2.3.1",
     "grunt-execute": "^0.2.2",
     "jit-grunt": "^0.10.0",
+    "json2csv": "^3.11.1",
     "load-grunt-config": "^0.19.2",
     "load-grunt-tasks": "^3.5.2",
     "minimist": "^1.2.0",

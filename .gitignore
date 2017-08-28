@@ -3,6 +3,7 @@ allFiles.json
 fileStats.json
 statsDict.json
 tree.json
+analysis.csv
 
 # Logs
 logs
