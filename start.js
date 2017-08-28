@@ -48,8 +48,8 @@ globAsync(pathArg + "/**/*.asp", globOptions)
     .then((data)=>{jsonStats = data; return data;})
     .then((data)=>{return treeBuilder.buildDictTree(data)})
     // Write to a json file for testing
-    .then((data)=> {fs.writeFileSync("tree.json", JSON.stringify(data, null, 2)); return data; });
-    //.then((data)=> console.log(JSON.stringify(data, null, 2)));
+    .then((data)=> {fs.writeFileSync("tree.json", JSON.stringify(data, null, 2)); return data; })
+    .then((data)=> console.log("done."));
 
 
 function buildFileStats(file) {

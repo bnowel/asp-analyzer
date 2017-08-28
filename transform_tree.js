@@ -76,7 +76,7 @@ var treeModule = function(opts) {
         {
             if (treeCache.hasOwnProperty(file)) {
                 //TODO: Bump the refcount
-                console.log(file + ": ", treeCache[file]);
+                //console.log(file + ": ", treeCache[file]);
                 return treeCache[file];
             }
 

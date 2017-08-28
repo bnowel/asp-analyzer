@@ -1,6 +1,8 @@
 const fs = require('fs');
 const json2csv = require('json2csv')
-const analysisFilename = "analysis.csv"
+
+const analysisJsonFilename = "analysis.json";
+const analysisFilename = "analysis.csv";
 
 var statsDict = JSON.parse(fs.readFileSync("statsDict.json"));
 var tree = JSON.parse(fs.readFileSync("tree.json"));
@@ -33,6 +35,11 @@ for (var file in tree) {
 }
 
 var csv = json2csv({data: stats, fields: fields});
+fs.writeFile(analysisJsonFilename, JSON.stringify(stats), function(err) {
+    if (err)
+        throw error;
+    console.log(analysisJsonFilename + " saved.");
+});
 
 fs.writeFile(analysisFilename, csv, function(err) {
     if (err)

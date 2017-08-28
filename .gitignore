@@ -4,6 +4,7 @@ fileStats.json
 statsDict.json
 tree.json
 analysis.csv
+compare.csv
 
 # Logs
 logs
