@@ -3,8 +3,10 @@ const pathModule = require('path');
 const clif = require('count-lines-in-file');
 const fs = require('fs');
 const glob = require("glob");
-const treeBuilder = require("./transform_tree.js");
 const path = require("path");
+
+const treeModule = require("./transform_tree.js");
+const treeBuilder = treeModule();
 
 const argOpts = {string: ["path"]}
 const globOptions = {realpath: true};
@@ -27,12 +29,22 @@ if (!pathArg) {
     return;
 }
 
+var analysisNameArg = argv.analysisName;
+if (!analysisNameArg) {
+    console.error("--analysisName is required");
+    return;
+}
+
+
+const analyzeModule = require("./analyze.js");
+
 var resolvedPath = pathModule.resolve(pathArg);
 var analysisRoot = (resolvedPath + path.sep).toLowerCase();
 console.log("Analyzing: " + analysisRoot);
 
 var allFiles = [];
 var totalStatsDict = {};
+var totalTree = {};
 
 // Make sure to use forward slashes in glob expressions (Even on Windows). https://github.com/isaacs/node-glob 
 globAsync(pathArg + "/**/*.asp", globOptions)
@@ -48,8 +60,15 @@ globAsync(pathArg + "/**/*.asp", globOptions)
     .then((data)=>{jsonStats = data; return data;})
     .then((data)=>{return treeBuilder.buildDictTree(data)})
     // Write to a json file for testing
-    .then((data)=> {fs.writeFileSync("tree.json", JSON.stringify(data, null, 2)); return data; })
-    .then((data)=> console.log("done."));
+    .then((data)=> {totalTree = data; fs.writeFileSync("tree.json", JSON.stringify(data, null, 2)); return data; })
+    .then((data)=> console.log("Directory search done."))
+    .then(() => {
+        analyzeModule({
+            statsDict: totalStatsDict,
+            tree: totalTree,
+            analysisFilename: analysisNameArg
+        }).run();
+    });
 
 
 function buildFileStats(file) {

@@ -5,6 +5,8 @@ statsDict.json
 tree.json
 analysis.csv
 compare.csv
+test.json
+test.csv
 
 # Logs
 logs

@@ -110,7 +110,7 @@ var treeModule = function(opts) {
 
 
 
-module.exports = treeModule();
+module.exports = treeModule;
 
 
 //var actualTree = treeModule().buildTree(sampleStats1);
