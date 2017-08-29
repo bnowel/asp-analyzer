@@ -1,0 +1,41 @@
+{
+    // Use IntelliSense to learn about possible Node.js debug attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Test",
+            "program": "${workspaceRoot}\\Scratch_Tests\\transform_tree.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "program": "${workspaceRoot}\\start.js",
+            "windows": {
+                "args": ["--path", "c:\\iis\\wwwroot\\Applications\\Mindbody.Web.Clients\\Web", "--analysisName", "test"]
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Test",
+            "program": "${workspaceRoot}\\start.js",
+            "windows": {
+                "args": ["--path", "sample_asp"]
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Compare",
+            "program": "${workspaceRoot}\\compare.js",
+            "windows": {
+                "args": ["--before", "before", "--after", "after", "--outFile", "compare"]
+            }
+        }
+    ]
+}
