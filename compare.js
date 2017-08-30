@@ -43,7 +43,7 @@ const afterFilename = afterArg + ".json";
 var before = JSON.parse(fs.readFileSync(beforeFilename));
 var after = JSON.parse(fs.readFileSync(afterFilename));
 
-var fields = ["file", "includes_before", "includes_after", "total_loc_before", "total_loc_after"];
+var fields = ["file", "num_refs_before", "num_refs_after", "includes_before", "includes_after", "total_loc_before", "total_loc_after"];
 var comparison = [];
 
 function findFileByName(arr, filename) {
@@ -57,15 +57,17 @@ function statsEqual(stats) {
 }
 
 // These are the fields from the analyze process in analyze.js
-// fields = ["file", "num_includes", "loc", "total_loc"];
+// fields = ["file", "num_refs", "num_includes", "loc", "total_loc"];
 
 function combineStats(beforeFile, afterFile) {
     var combined = {};
     combined[fields[0]] = afterFile.file;
-    combined[fields[1]] = beforeFile.num_includes;
-    combined[fields[2]] = afterFile.num_includes;
-    combined[fields[3]] = beforeFile.total_loc;
-    combined[fields[4]] = afterFile.total_loc;
+    combined[fields[1]] = beforeFile.num_refs;
+    combined[fields[2]] = afterFile.num_refs;
+    combined[fields[3]] = beforeFile.num_includes;
+    combined[fields[4]] = afterFile.num_includes;
+    combined[fields[5]] = beforeFile.total_loc;
+    combined[fields[6]] = afterFile.total_loc;
 
     return combined;
 }

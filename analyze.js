@@ -22,19 +22,42 @@ var analyzeModule = function(opts) {
 
         }
 
-        var fields = ["file", "num_includes", "loc", "total_loc"];
+        var fields = ["file", "num_refs", "num_includes", "loc", "total_loc"];
         var stats = [];
+        var allRefs = {};
+
+        function updateRefCounts(file, fileTree) {
+            for (var subFile in fileTree) {
+                if (tree.hasOwnProperty(subFile)) {
+                    updateRefCounts(subFile, fileTree[subFile]);
+                }
+            }
+            
+            if (typeof allRefs[file] === "undefined")
+                allRefs[file] = 0;
+            else
+                allRefs[file]++
+        }
 
         for (var file in tree) {
             if (tree.hasOwnProperty(file)) {
                 var stat = {};
                 stat[fields[0]] = file;
-                stat[fields[1]] = statsDict[file].inc.length;
-                stat[fields[2]] = statsDict[file].loc;
-                stat[fields[3]] = getLinesOfCode(file, tree[file]);
+                stat[fields[2]] = statsDict[file].inc.length;
+                stat[fields[3]] = statsDict[file].loc;
+                stat[fields[4]] = getLinesOfCode(file, tree[file]);
                 
+                updateRefCounts(file, tree[file]);
+
                 stats.push(stat);
             }
+        }
+        console.log(allRefs);
+
+        for (var i = 0; i < stats.length; i++) {
+            var stat = stats[i];
+            
+            stat[fields[1]] = allRefs[stat[fields[0]]];
         }
 
         var csv = json2csv({data: stats, fields: fields});
