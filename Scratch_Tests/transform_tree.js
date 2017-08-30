@@ -77,13 +77,16 @@ var expectedDictTree =
 
 
 
-const treeModule = require("../transform_tree.js");
+const treeModule = require("../transform_tree.js")({});
 
 var actualTree = treeModule.buildDictTree(sampleStatsDict);
 
 //buildTree(sampleStats1)
 var expectedString = JSON.stringify(expectedDictTree);
 var actualString = JSON.stringify(actualTree);
-console.log(expectedString)
-console.log(actualString)
-console.log(expectedString == actualString);
+//console.log(expectedString)
+//console.log(actualString)
+console.assert(expectedString == actualString);
+
+console.log(actualTree)
+console.log(treeModule.flattenTree(actualTree))

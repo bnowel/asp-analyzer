@@ -4,17 +4,19 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
             "type": "node",
             "request": "launch",
             "name": "Test",
-            "program": "${workspaceRoot}\\Scratch_Tests\\transform_tree.js"
+            "program": "${workspaceRoot}/Scratch_Tests/transform_tree.js"
         },
         {
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceRoot}\\start.js",
+            "program": "${workspaceRoot}/start.js",
+            "args": ["--path=../Mindbody.Web.Clients/Web", "--analysisName=Web"],
             "windows": {
                 "args": ["--path", "c:\\iis\\wwwroot\\Applications\\Mindbody.Web.Clients\\Web", "--analysisName", "test"]
             }
@@ -23,7 +25,8 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Test",
-            "program": "${workspaceRoot}\\start.js",
+            "program": "${workspaceRoot}/start.js",
+            "args": ["--path=sample_asp","--analysisName=test"],
             "windows": {
                 "args": ["--path", "sample_asp"]
             }

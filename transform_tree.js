@@ -100,10 +100,51 @@ var treeModule = function(opts) {
 
             return stats;
         }
+
+        function flattenTree(tree)
+        {
+            var flatTree = {}
+            for (var node in tree) {
+                if (tree.hasOwnProperty(node)) {
+                    flatTree[node] = getDistinctIncludes(tree[node]);
+                 }
+             }
+             return flatTree;
+        }
+
+        function getDistinctIncludes(treeNode)
+        {
+            var flatObjNode = {}
+            var flatArray = [];
+            flatten(treeNode, flatObjNode);
+            for (var fname in flatObjNode)
+            {
+                if (flatObjNode.hasOwnProperty(fname))
+                {
+                    flatArray.push(fname);
+                }
+            }
+            flatArray.sort();
+            return flatArray;
+        }
+
+        function flatten(obj, node)
+        {
+            for (var prop in obj)
+            {
+                if (obj.hasOwnProperty(prop))
+                {
+                    node[prop] = {};
+                    flatten(obj[prop], node);
+                }
+            }
+        }
+
     
         return {
             //buildTree: buildTree,
-            buildDictTree: buildDictTree
+            buildDictTree: buildDictTree,
+            flattenTree : flattenTree
         }
     }
 

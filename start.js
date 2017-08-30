@@ -8,7 +8,7 @@ const path = require("path");
 const treeModule = require("./transform_tree.js");
 const treeBuilder = treeModule();
 
-const argOpts = {string: ["path"]}
+const argOpts = {string: ["path","analysisName"]}
 const globOptions = {realpath: true};
 const regex = /((<!--\s*#include\s+\w+\s*=\s*")(.+.asp)("\s*-->))/g;
 
@@ -68,6 +68,10 @@ globAsync(pathArg + "/**/*.asp", globOptions)
             tree: totalTree,
             analysisFilename: analysisNameArg
         }).run();
+    })
+    .then(()=> {return treeBuilder.flattenTree(totalTree)})
+    .then((data)=>{
+        fs.writeFileSync("distinctIncludes.json", JSON.stringify(data, null, 2)); 
     });
 
 
