@@ -40,6 +40,9 @@ else {
 const beforeFilename = beforeArg + ".json";
 const afterFilename = afterArg + ".json";
 
+console.log("before: " + beforeFilename);
+console.log("after: " + afterFilename);
+
 var before = JSON.parse(fs.readFileSync(beforeFilename));
 var after = JSON.parse(fs.readFileSync(afterFilename));
 
@@ -53,7 +56,7 @@ function findFileByName(arr, filename) {
 }
 
 function statsEqual(stats) {
-    return (combined[fields[1]] == combined[fields[2]]) && (combined[fields[3]] == combined[fields[4]]);
+    return (combined[fields[1]] == combined[fields[2]]) && (combined[fields[3]] == combined[fields[4]]) && (combined[fields[5]] == combined[fields[6]]);
 }
 
 // These are the fields from the analyze process in analyze.js

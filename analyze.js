@@ -52,7 +52,6 @@ var analyzeModule = function(opts) {
                 stats.push(stat);
             }
         }
-        console.log(allRefs);
 
         for (var i = 0; i < stats.length; i++) {
             var stat = stats[i];
@@ -72,6 +71,8 @@ var analyzeModule = function(opts) {
                 throw err;
             console.log(analysisFilename + " saved.");
         });
+
+        return stats;
     }
     return {
         run: run

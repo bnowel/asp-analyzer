@@ -45,6 +45,7 @@ console.log("Analyzing: " + analysisRoot);
 var allFiles = [];
 var totalStatsDict = {};
 var totalTree = {};
+var statsArr = [];
 
 // Make sure to use forward slashes in glob expressions (Even on Windows). https://github.com/isaacs/node-glob 
 globAsync(pathArg + "/**/*.asp", globOptions)
@@ -63,13 +64,30 @@ globAsync(pathArg + "/**/*.asp", globOptions)
     .then((data)=> {totalTree = data; fs.writeFileSync("tree.json", JSON.stringify(data, null, 2)); return data; })
     .then((data)=> console.log("Directory search done."))
     .then(() => {
-        analyzeModule({
+        return analyzeModule({
             statsDict: totalStatsDict,
             tree: totalTree,
             analysisFilename: analysisNameArg
         }).run();
     })
-    .then(()=> {return treeBuilder.flattenTree(totalTree)})
+    .then((stats) => {statsArr = stats})
+    .then(()=> {
+        var topLevelFiles = statsArr.filter(function(elem) {
+            return elem.num_refs <= 0;
+        });
+
+        var topLevelFileNames = topLevelFiles.map(function(elem) {
+            return elem.file;
+        });
+
+        var topLevelTree = {};
+        for (var i = 0; i < topLevelFileNames.length; i++) {
+            var file = topLevelFileNames[i];
+            topLevelTree[file] = totalTree[file];
+        }
+
+        return treeBuilder.flattenTree(topLevelTree)
+    })
     .then((data)=>{
         fs.writeFileSync("distinctIncludes.json", JSON.stringify(data, null, 2)); 
     });
