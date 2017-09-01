@@ -41,57 +41,65 @@ const analyzeModule = require("./analyze.js");
 var resolvedPath = pathModule.resolve(pathArg);
 var analysisRoot = (resolvedPath + path.sep).toLowerCase();
 console.log("Analyzing: " + analysisRoot);
+var allFiles;
+var totalTree;
+(async()=>{
 
-var allFiles = [];
-var totalStatsDict = {};
-var totalTree = {};
-var statsArr = [];
 
-// Make sure to use forward slashes in glob expressions (Even on Windows). https://github.com/isaacs/node-glob 
-globAsync(pathArg + "/**/*.asp", globOptions)
-    .catch(console.log)
-    // Write to a json file for testing
-    .then((files) => {var lowCaseFiles = files.map(function(file) {return file.toLowerCase()}); allFiles = lowCaseFiles; fs.writeFileSync("allFiles.json", JSON.stringify(lowCaseFiles, null, 2)); return lowCaseFiles; })
-    .then((files)=>Promise.all(files.map(buildFileStats)))
-    // Write to a json file for testing
-    .then((files) => {fs.writeFileSync("fileStats.json", JSON.stringify(files, null, 2)); return files; })
-    .then((data)=>{return convertArray(data);})
-    // Write to a json file for testing
-    .then((files) => {totalStatsDict = files; fs.writeFileSync("statsDict.json", JSON.stringify(files, null, 2)); return files; })
-    .then((data)=>{jsonStats = data; return data;})
-    .then((data)=>{return treeBuilder.buildDictTree(data)})
-    // Write to a json file for testing
-    .then((data)=> {totalTree = data; fs.writeFileSync("tree.json", JSON.stringify(data, null, 2)); return data; })
-    .then((data)=> console.log("Directory search done."))
-    .then(() => {
-        return analyzeModule({
-            statsDict: totalStatsDict,
-            tree: totalTree,
-            analysisFilename: analysisNameArg
-        }).run();
-    })
-    .then((stats) => {statsArr = stats})
-    .then(()=> {
-        var topLevelFiles = statsArr.filter(function(elem) {
-            return elem.num_refs <= 0;
-        });
+    
+    try{
+        //Do this
 
-        var topLevelFileNames = topLevelFiles.map(function(elem) {
-            return elem.file;
-        });
 
-        var topLevelTree = {};
-        for (var i = 0; i < topLevelFileNames.length; i++) {
-            var file = topLevelFileNames[i];
-            topLevelTree[file] = totalTree[file];
-        }
+        var globFiles = await globAsync(pathArg + "/**/*.asp", globOptions)
+        
+        allFiles = globFiles.map(function(file) {return file.toLowerCase()});
 
-        return treeBuilder.flattenTree(topLevelTree)
-    })
-    .then((data)=>{
-        fs.writeFileSync("distinctIncludes.json", JSON.stringify(data, null, 2)); 
+        fs.writeFile("allFiles.json", JSON.stringify(allFiles, null, 2)); 
+        var fileStats = await Promise.all(allFiles.map(buildFileStats));
+        // var fileStats = await Promise.all( allFiles.map(await buildFileStats));
+
+
+        fs.writeFile("fileStats.json", JSON.stringify(fileStats, null, 2));
+        //Do that
+
+        var totalStatsDict = convertArray(fileStats); 
+        fs.writeFile("statsDict.json", JSON.stringify(totalStatsDict, null, 2)); 
+
+        totalTree = treeBuilder.buildDictTree(totalStatsDict); 
+        fs.writeFileSync("tree.json", JSON.stringify(totalTree, null, 2));
+        
+        var statsArr = analyzeModule({
+                        statsDict: totalStatsDict,
+                        tree: totalTree,
+                        analysisFilename: analysisNameArg
+                    }).run();
+
+        var flatTree = buildFlatTree(statsArr);
+        fs.writeFile("distinctIncludes.json", JSON.stringify(flatTree, null, 2)); 
+    }catch(e){
+        console.log(e);
+    }
+
+})()
+
+function buildFlatTree(statsArray){
+    var topLevelFiles = statsArray.filter(function(elem) {
+        return elem.num_refs <= 0;
     });
 
+    var topLevelFileNames = topLevelFiles.map(function(elem) {
+        return elem.file;
+    });
+
+    var topLevelTree = {};
+    for (var i = 0; i < topLevelFileNames.length; i++) {
+        var file = topLevelFileNames[i];
+        topLevelTree[file] = totalTree[file];
+    }
+
+    return treeBuilder.flattenTree(topLevelTree)
+}
 
 function buildFileStats(file) {
 
