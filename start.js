@@ -63,19 +63,19 @@ async function analyzeStart(opts) {
         
         allFiles = globFiles.map(function(file) {return file.toLowerCase()});
 
-        fs.writeFile("allFiles.json", JSON.stringify(allFiles, null, 2)); 
+        fs.writeFile("allFiles.json", JSON.stringify(allFiles, null, 2),()=>{}); 
         var fileStats = await Promise.all(allFiles.map(buildFileStats));
         // var fileStats = await Promise.all( allFiles.map(await buildFileStats));
 
 
-        fs.writeFile("fileStats.json", JSON.stringify(fileStats, null, 2));
+        fs.writeFile("fileStats.json", JSON.stringify(fileStats, null, 2),()=>{});
         //Do that
 
         var totalStatsDict = convertArray(fileStats); 
-        fs.writeFile("statsDict.json", JSON.stringify(totalStatsDict, null, 2)); 
+        fs.writeFile("statsDict.json", JSON.stringify(totalStatsDict, null, 2),()=>{}); 
 
         totalTree = treeBuilder.buildDictTree(totalStatsDict); 
-        fs.writeFileSync("tree.json", JSON.stringify(totalTree, null, 2));
+        fs.writeFileSync("tree.json", JSON.stringify(totalTree, null, 2),()=>{});
         
         var statsArr = analyzeModule.run({
             statsDict: totalStatsDict,
@@ -84,7 +84,7 @@ async function analyzeStart(opts) {
         });
 
         var flatTree = buildFlatTree(statsArr);
-        fs.writeFile("distinctIncludes.json", JSON.stringify(flatTree, null, 2)); 
+        fs.writeFile("distinctIncludes.json", JSON.stringify(flatTree, null, 2),()=>{}); 
     }catch(e){
         console.log(e);
     }
@@ -175,4 +175,3 @@ async function analyzeStart(opts) {
 }
 
 analyzeStart(runOpts);
-
