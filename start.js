@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const parseArgs = require('minimist')
 const pathModule = require('path');
 const clif = require('count-lines-in-file');
@@ -36,16 +38,22 @@ if (!analysisNameArg) {
 }
 
 
-const analyzeModule = require("./analyze.js");
+const analyzeModule = require("./analyze.js")({});
 
-var resolvedPath = pathModule.resolve(pathArg);
-var analysisRoot = (resolvedPath + path.sep).toLowerCase();
-console.log("Analyzing: " + analysisRoot);
-var allFiles;
-var totalTree;
-(async()=>{
+var runOpts = {
+    path:pathArg,
+    analysisName:analysisNameArg
+}
 
 
+async function analyzeStart(opts) {
+
+
+    var resolvedPath = pathModule.resolve(opts.path);
+    var analysisRoot = (resolvedPath + path.sep).toLowerCase();
+    console.log("Analyzing: " + analysisRoot);
+    var allFiles;
+    var totalTree;
     
     try{
         //Do this
@@ -69,99 +77,102 @@ var totalTree;
         totalTree = treeBuilder.buildDictTree(totalStatsDict); 
         fs.writeFileSync("tree.json", JSON.stringify(totalTree, null, 2));
         
-        var statsArr = analyzeModule({
-                        statsDict: totalStatsDict,
-                        tree: totalTree,
-                        analysisFilename: analysisNameArg
-                    }).run();
+        var statsArr = analyzeModule.run({
+            statsDict: totalStatsDict,
+            tree: totalTree,
+            analysisFilename: opts.analysisName
+        });
 
         var flatTree = buildFlatTree(statsArr);
         fs.writeFile("distinctIncludes.json", JSON.stringify(flatTree, null, 2)); 
     }catch(e){
         console.log(e);
     }
-
-})()
-
-function buildFlatTree(statsArray){
-    var topLevelFiles = statsArray.filter(function(elem) {
-        return elem.num_refs <= 0;
-    });
-
-    var topLevelFileNames = topLevelFiles.map(function(elem) {
-        return elem.file;
-    });
-
-    var topLevelTree = {};
-    for (var i = 0; i < topLevelFileNames.length; i++) {
-        var file = topLevelFileNames[i];
-        topLevelTree[file] = totalTree[file];
+    function buildFlatTree(statsArray){
+        var topLevelFiles = statsArray.filter(function(elem) {
+            return elem.num_refs <= 0;
+        });
+    
+        var topLevelFileNames = topLevelFiles.map(function(elem) {
+            return elem.file;
+        });
+    
+        var topLevelTree = {};
+        for (var i = 0; i < topLevelFileNames.length; i++) {
+            var file = topLevelFileNames[i];
+            topLevelTree[file] = totalTree[file];
+        }
+    
+        return treeBuilder.flattenTree(topLevelTree)
     }
-
-    return treeBuilder.flattenTree(topLevelTree)
-}
-
-function buildFileStats(file) {
-
-    return new Promise(function(resolve, reject){
-        clifAsync(file).then((num) => {
-
-            fs.readFile(file, function(err, data){
-                let m;
-                let includes = [];
-                let dirname = pathModule.dirname(file)
-                let filename = file.replace(analysisRoot, "")
-                while ((m = regex.exec(data)) !== null) {
-                    let match = m[3];
-                    let fullIncFile = match.startsWith("/") ? pathModule.resolve(analysisRoot, match.substring(1)) : pathModule.resolve(dirname, match)
-                    let incFile = fullIncFile.toLowerCase().replace(analysisRoot, "")
-                    
-                    // Make sure that the reference we resolve exists on the filesystem
-                    var fileExists = allFiles.find(x => x == fullIncFile.toLowerCase());
-                    if (fileExists) {
-                        // Add only valid includes
-                        includes.push(incFile)
+    
+    function buildFileStats(file) {
+    
+        return new Promise(function(resolve, reject){
+            clifAsync(file).then((num) => {
+    
+                fs.readFile(file, function(err, data){
+                    let m;
+                    let includes = [];
+                    let dirname = pathModule.dirname(file)
+                    let filename = file.replace(analysisRoot, "")
+                    while ((m = regex.exec(data)) !== null) {
+                        let match = m[3];
+                        let fullIncFile = match.startsWith("/") ? pathModule.resolve(analysisRoot, match.substring(1)) : pathModule.resolve(dirname, match)
+                        let incFile = fullIncFile.toLowerCase().replace(analysisRoot, "")
+                        
+                        // Make sure that the reference we resolve exists on the filesystem
+                        var fileExists = allFiles.find(x => x == fullIncFile.toLowerCase());
+                        if (fileExists) {
+                            // Add only valid includes
+                            includes.push(incFile)
+                        }
+                        else {
+                            if (opts.warnings){
+                                console.warn("[" + file + "] '" + match + "'\n\tCan't find: " + fullIncFile);
+                            }
+                        }
                     }
-                    else {
-                        console.warn("[" + file + "] '" + match + "'\n\tCan't find: " + fullIncFile);
-                    }
-                }
-                resolve({name: filename, loc: num, inc: includes})
+                    resolve({name: filename, loc: num, inc: includes})
+                });
             });
         });
-    });
-}
-
-function convertArray(array) {
-    var obj = {};
-
-    array.map(function(elem) {
-        doElemWork(elem, obj);
-    });
-
-    return obj;
-}
-
-function doElemWork(elem, obj) {
-    obj[elem.name] = {inc: elem.inc, loc: elem.loc};
-}
-
-
-function globAsync(pattern, options){
-    return new Promise(function(resolve, reject) {
-        glob(pattern, options, function(err, files) {
-             if (err !== null) return reject(err);
-             resolve(files);
+    }
+    
+    function convertArray(array) {
+        var obj = {};
+    
+        array.map(function(elem) {
+            doElemWork(elem, obj);
         });
-    });
+    
+        return obj;
+    }
+    
+    function doElemWork(elem, obj) {
+        obj[elem.name] = {inc: elem.inc, loc: elem.loc};
+    }
+    
+    
+    function globAsync(pattern, options){
+        return new Promise(function(resolve, reject) {
+            glob(pattern, options, function(err, files) {
+                 if (err !== null) return reject(err);
+                 resolve(files);
+            });
+        });
+    }
+    
+    
+    function clifAsync(file) {
+        return new Promise(function(resolve, reject) {
+             clif(file, function(err, number) {
+                 if(err !== null) return reject(err);
+                 resolve(number);
+             });
+        });
+    }
 }
 
+analyzeStart(runOpts);
 
-function clifAsync(file) {
-    return new Promise(function(resolve, reject) {
-         clif(file, function(err, number) {
-             if(err !== null) return reject(err);
-             resolve(number);
-         });
-    });
-}

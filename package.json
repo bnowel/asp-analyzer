@@ -1,9 +1,12 @@
 {
   "name": "asp-analyzer",
   "version": "1.0.0",
-  "description": "",
+  "description": "TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project.",
   "repository": {},
-  "license": "UNLICENSED",
+  "license": "MIT",
+  "bin":{
+    "asp-analyze": "./start.js"
+  },
   "devDependencies": {
     "grunt": "0.4.5",
     "grunt-concurrent": "*",
@@ -30,5 +33,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": ""
+  "author": "bnowel",
+  "keywords": [
+    "asp",
+    "vbscript",
+    "includes",
+    "include"
+  ]
 }
