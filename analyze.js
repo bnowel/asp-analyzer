@@ -1,9 +1,9 @@
 
-var analyzeModule = function(opts) {
+var analyzeModule = function(moduleOpts) {
     const fs = require('fs');
     const json2csv = require('json2csv');
 
-    function run() {
+    function run(opts) {
         const analysisJsonFilename = opts.analysisFilename + ".json" || "analysis.json";
         const analysisFilename = opts.analysisFilename + ".csv" || "analysis.csv";
 
