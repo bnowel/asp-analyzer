@@ -1,14 +1,21 @@
 
 var analyzeModule = function(moduleOpts) {
     const fs = require('fs');
+    const pathModule = require('path');
     const json2csv = require('json2csv');
 
     function run(opts) {
-        const analysisJsonFilename = opts.analysisFilename + ".json" || "analysis.json";
-        const analysisFilename = opts.analysisFilename + ".csv" || "analysis.csv";
+        var outputPath = opts.outputPath || ".";
 
-        var statsDict = opts.statsDict || JSON.parse(fs.readFileSync("statsDict.json"));
-        var tree = opts.tree || JSON.parse(fs.readFileSync("tree.json"));
+        function getOutputPath(filename) {
+            return pathModule.join(outputPath, filename);
+        }
+
+        const analysisJsonFilename = getOutputPath(opts.analysisFilename + ".json" || "analysis.json");
+        const analysisFilename = getOutputPath(opts.analysisFilename + ".csv" || "analysis.csv");
+
+        var statsDict = opts.statsDict || JSON.parse(fs.readFileSync(getOutputPath("statsDict.json")));
+        var tree = opts.tree || JSON.parse(fs.readFileSync(getOutputPath("tree.json")));
 
         function getLinesOfCode(file, fileTree) {
             var locInIncludes = 0;

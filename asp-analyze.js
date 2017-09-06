@@ -16,6 +16,8 @@ async function analyzeStart(opts) {
 
     var resolvedPath = pathModule.resolve(opts.path);
     var analysisRoot = (resolvedPath + pathModule.sep).toLowerCase();
+    var outputPath = opts.outputPath || ".";
+
     console.log("Analyzing: " + analysisRoot);
     var allFiles;
     var totalTree;
@@ -33,17 +35,18 @@ async function analyzeStart(opts) {
         var statsArr = analyzeModule.run({
             statsDict: totalStatsDict,
             tree: totalTree,
-            analysisFilename: opts.analysisName
+            analysisFilename: opts.analysisName,
+            outputPath: outputPath
         });
 
         var flatTree = buildFlatTree(statsArr);
 
         await Promise.all([
-            writeFileAsync("allFiles.json", JSON.stringify(allFiles, null, 2)),
-            writeFileAsync("fileStats.json", JSON.stringify(fileStats, null, 2)),
-            writeFileAsync("statsDict.json", JSON.stringify(totalStatsDict, null, 2)),
-            writeFileAsync("tree.json", JSON.stringify(totalTree, null, 2)),
-            writeFileAsync("distinctIncludes.json", JSON.stringify(flatTree, null, 2))
+            writeJsonAsync("allFiles.json", allFiles),
+            writeJsonAsync("fileStats.json", fileStats),
+            writeJsonAsync("statsDict.json", totalStatsDict),
+            writeJsonAsync("tree.json", totalTree),
+            writeJsonAsync("distinctIncludes.json", flatTree)
         ]);
     } catch(e) {
         console.log(e);
@@ -137,6 +140,22 @@ async function analyzeStart(opts) {
     function writeFileAsync(filename, content, callback) {
         return new Promise(function(resolve, reject) {
             fs.writeFile(filename, content, (err) => {
+                if (!!callback)
+                    callback(err);
+
+                if (err)
+                    reject(err);
+                else
+                    resolve();
+            });
+        });
+    }
+
+    function writeJsonAsync(filename, json, callback) {
+        return new Promise(function(resolve, reject) {
+            var relativeFilename = pathModule.join(outputPath, filename);
+
+            fs.writeFile(relativeFilename, JSON.stringify(json, null, 2), (err) => {
                 if (!!callback)
                     callback(err);
 
