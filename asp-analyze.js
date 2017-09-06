@@ -4,7 +4,6 @@ const clif = require('count-lines-in-file');
 const fs = require('fs');
 const glob = require("glob");
 const treeModule = require("./transform_tree.js");
-const treeBuilder = treeModule();
 const analyzeModule = require("./analyze.js")({});
 const globOptions = {realpath: true};
 const regex = /((<!--\s*#include\s+\w+\s*=\s*")(.+.asp)("\s*-->))/g;
@@ -12,8 +11,7 @@ const regex = /((<!--\s*#include\s+\w+\s*=\s*")(.+.asp)("\s*-->))/g;
 
 
 async function analyzeStart(opts) {
-
-
+    const treeBuilder = treeModule();
     var resolvedPath = pathModule.resolve(opts.path);
     var analysisRoot = (resolvedPath + pathModule.sep).toLowerCase();
     var outputPath = opts.outputPath || ".";
@@ -48,6 +46,8 @@ async function analyzeStart(opts) {
             writeJsonAsync("tree.json", totalTree),
             writeJsonAsync("distinctIncludes.json", flatTree)
         ]);
+
+        return statsArr;
     } catch(e) {
         console.log(e);
     }

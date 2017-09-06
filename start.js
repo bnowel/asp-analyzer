@@ -6,6 +6,7 @@ const asp_analyzer = require("./asp-analyze.js");
 const fs = require("fs");
 const nodePath = require("path");
 const nodeOs = require("os");
+const compareModule = require("./compare.js")({});
 
 const argOpts = {string: ["path", "analysisName", "before", "after", "output"]}
 /*  command line arg options
@@ -61,11 +62,6 @@ if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir);
 }
 
-
-async function awaitAnalyze(opts) {
-    return await asp_analyzer.analyze(opts);
-}
-
 function getBranchPath(outputPath, branch) {
     return nodePath.join(outputPath, branch.substring(0, 12));
 }
@@ -93,7 +89,7 @@ function getDateTimeForPath() {
             outputPath: beforePath,
             analysisName: beforeArg
         }
-        await awaitAnalyze(runBeforeOpts);
+        var beforeStats = await asp_analyzer.analyze(runBeforeOpts);
 
         await repo.checkout(afterArg);
         console.log("git checkout " + afterArg);
@@ -103,11 +99,23 @@ function getDateTimeForPath() {
             outputPath: afterPath,
             analysisName: afterArg
         }
-        await awaitAnalyze(runAfterOpts);
+        var afterStats = await asp_analyzer.analyze(runAfterOpts);
 
+        compareModule.run({
+            before: beforeStats,
+            after: afterStats,
+            outFile: nodePath.join(outputDir, "compare.csv")
+        });
     }
     else {
         // Operate on analysisName
+        var opts = {
+            path: pathArg,
+            //outputPath: afterPath,
+            analysisName: analysisNameArg
+        }
+
+        var stats = await asp_analyzer.analyze(opts);
     }
     
 })();

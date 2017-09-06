@@ -67,17 +67,13 @@ var analyzeModule = function(moduleOpts) {
         }
 
         var csv = json2csv({data: stats, fields: fields});
-        fs.writeFile(analysisJsonFilename, JSON.stringify(stats), function(err) {
-            if (err)
-                throw error;
-            console.log(analysisJsonFilename + " saved.");
-        });
+        fs.writeFileSync(analysisJsonFilename, JSON.stringify(stats, null, 2));
+        console.log(analysisJsonFilename + " saved.");
+        
 
-        fs.writeFile(analysisFilename, csv, function(err) {
-            if (err)
-                throw err;
-            console.log(analysisFilename + " saved.");
-        });
+        fs.writeFileSync(analysisFilename, csv);
+        console.log(analysisFilename + " saved.");
+        
 
         return stats;
     }

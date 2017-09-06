@@ -45,9 +45,10 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Compare",
-            "program": "${workspaceRoot}\\compare.js",
+            "program": "${workspaceRoot}\\start.js",
             "windows": {
-                "args": ["--before", "before", "--after", "after", "--outFile", "compare"]
+                //--path C:\iis\wwwroot\Applications\Mindbody.Web.Clients\ --before dev --after webconfigCleanup
+                "args": ["--path", "C:\\iis\\wwwroot\\Applications\\Mindbody.Web.Clients\\", "--before", "dev", "--after", "webconfigCleanup"]
             }
         },
         {
