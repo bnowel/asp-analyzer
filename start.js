@@ -30,6 +30,7 @@ var beforeArg = argv.before;
 var afterArg = argv.after;
 var hasBeforeAndAfterArgs = false;
 
+// These are git references (branch or SHA)
 if ((!afterArg && beforeArg) || (afterArg && !beforeArg)) {
     console.error("Must pass --before and --after");
     return;
@@ -37,6 +38,7 @@ if ((!afterArg && beforeArg) || (afterArg && !beforeArg)) {
     hasBeforeAndAfterArgs = true;
 }
 
+// Leave the repo as it is or maybe it's not even a repo :)
 var analysisNameArg = argv.analysisName;
 if (!analysisNameArg && !hasBeforeAndAfterArgs) {
     console.error("--analysisName is required");
@@ -44,7 +46,7 @@ if (!analysisNameArg && !hasBeforeAndAfterArgs) {
 }
 
 // Store our stuff on the desktop
-var outputDir = nodePath.join(nodeOs.homedir(), "desktop/asp-analyze");
+var outputDir = nodePath.join(nodeOs.homedir(), "Desktop/asp-analyze");
 
 var outputArg = argv.output;
 
@@ -62,6 +64,7 @@ if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir);
 }
 
+// Truncate the branch because it could be a SHA which would be HUGE
 function getBranchPath(outputPath, branch) {
     return nodePath.join(outputPath, branch.substring(0, 12));
 }

@@ -40,6 +40,7 @@ async function analyzeStart(opts) {
         var flatTree = buildFlatTree(statsArr);
 
         await Promise.all([
+            // TODO: What is actually contained in each of these files in the README
             writeJsonAsync("allFiles.json", allFiles),
             writeJsonAsync("fileStats.json", fileStats),
             writeJsonAsync("statsDict.json", totalStatsDict),
