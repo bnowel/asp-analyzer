@@ -28,7 +28,8 @@
     "load-grunt-config": "^0.19.2",
     "load-grunt-tasks": "^3.5.2",
     "minimist": "^1.2.0",
-    "rimraf": "^2.5.4"
+    "rimraf": "^2.5.4",
+    "simple-git": "^1.77.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -49,6 +49,16 @@
             "windows": {
                 "args": ["--before", "before", "--after", "after", "--outFile", "compare"]
             }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Git Test",
+            "program": "${workspaceRoot}\\Scratch_Tests\\git.js",
+            "windows": {
+                "args": []
+            }
         }
+        
     ]
 }

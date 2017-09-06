@@ -20,27 +20,15 @@ async function analyzeStart(opts) {
     var allFiles;
     var totalTree;
     
-    try{
-        //Do this
-
-
+    try {
         var globFiles = await globAsync(opts.path + "/**/*.asp", globOptions)
         
         allFiles = globFiles.map(function(file) {return file.toLowerCase()});
-
-        fs.writeFile("allFiles.json", JSON.stringify(allFiles, null, 2),()=>{}); 
+        
         var fileStats = await Promise.all(allFiles.map(buildFileStats));
-        // var fileStats = await Promise.all( allFiles.map(await buildFileStats));
-
-
-        fs.writeFile("fileStats.json", JSON.stringify(fileStats, null, 2),()=>{});
-        //Do that
 
         var totalStatsDict = convertArray(fileStats); 
-        fs.writeFile("statsDict.json", JSON.stringify(totalStatsDict, null, 2),()=>{}); 
-
         totalTree = treeBuilder.buildDictTree(totalStatsDict); 
-        fs.writeFileSync("tree.json", JSON.stringify(totalTree, null, 2),()=>{});
         
         var statsArr = analyzeModule.run({
             statsDict: totalStatsDict,
@@ -49,10 +37,18 @@ async function analyzeStart(opts) {
         });
 
         var flatTree = buildFlatTree(statsArr);
-        fs.writeFile("distinctIncludes.json", JSON.stringify(flatTree, null, 2),()=>{}); 
-    }catch(e){
+
+        await Promise.all([
+            writeFileAsync("allFiles.json", JSON.stringify(allFiles, null, 2)),
+            writeFileAsync("fileStats.json", JSON.stringify(fileStats, null, 2)),
+            writeFileAsync("statsDict.json", JSON.stringify(totalStatsDict, null, 2)),
+            writeFileAsync("tree.json", JSON.stringify(totalTree, null, 2)),
+            writeFileAsync("distinctIncludes.json", JSON.stringify(flatTree, null, 2))
+        ]);
+    } catch(e) {
         console.log(e);
     }
+
     function buildFlatTree(statsArray){
         var topLevelFiles = statsArray.filter(function(elem) {
             return elem.num_refs <= 0;
@@ -135,6 +131,20 @@ async function analyzeStart(opts) {
                  if(err !== null) return reject(err);
                  resolve(number);
              });
+        });
+    }
+
+    function writeFileAsync(filename, content, callback) {
+        return new Promise(function(resolve, reject) {
+            fs.writeFile(filename, content, (err) => {
+                if (!!callback)
+                    callback(err);
+
+                if (err)
+                    reject(err);
+                else
+                    resolve();
+            });
         });
     }
 }
