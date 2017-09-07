@@ -2,7 +2,7 @@ const fs = require('fs');
 const json2csv = require('json2csv');
 
 var compareModule = function(moduleOpts) {
-    var fields = ["file", "num_refs_before", "num_refs_after", "includes_before", "includes_after", "total_loc_before", "total_loc_after", "loc_delta"];
+    var fields = ["file", "num_refs_before", "num_refs_after", "includes_before", "includes_after", "total_loc_before", "total_loc_after", "loc_delta", "loc_delta_%"];
     var comparison = [];
 
     function findFileByName(arr, filename) {
@@ -27,8 +27,11 @@ var compareModule = function(moduleOpts) {
         combined[fields[4]] = afterFile.num_includes;
         combined[fields[5]] = beforeFile.total_loc;
         combined[fields[6]] = afterFile.total_loc;
-        combined[fields[7]] = beforeFile.total_loc - afterFile.total_loc;
-        
+        let delta = afterFile.total_loc - beforeFile.total_loc;
+        combined[fields[7]] = delta;
+        let percent = (Math.round(1000*delta/beforeFile.total_loc)/1000)
+        combined[fields[8]] = percent;
+
         return combined;
     }
 
@@ -50,11 +53,16 @@ var compareModule = function(moduleOpts) {
             }
         }
 
-        console.log(diffFiles + " files changed");
-
         var csv = json2csv({data: stats, fields: fields});
         fs.writeFileSync(comparisonFilename, csv);
         console.log(comparisonFilename + " saved.");
+        if (opts.summary){
+            console.log(diffFiles + " files changed");
+            var percentAvg = Math.round(100*(stats.map(x=>x[fields[8]]).reduce(function(sum, value) {
+                return sum + value;
+              }, 0)/stats.length));
+            console.log("Avg % reduction per file: "+ percentAvg)
+        }
     }
     return {
         run: run

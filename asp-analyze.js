@@ -16,7 +16,9 @@ async function analyzeStart(opts) {
     var analysisRoot = (resolvedPath + pathModule.sep).toLowerCase();
     var outputPath = opts.outputPath || ".";
 
-    console.log("Analyzing: " + analysisRoot);
+    if (opts.summary){
+        console.log("Analyzing: " + analysisRoot);
+    }
     var allFiles;
     var totalTree;
     
@@ -33,7 +35,7 @@ async function analyzeStart(opts) {
         var statsArr = analyzeModule.run({
             statsDict: totalStatsDict,
             tree: totalTree,
-            analysisFilename: opts.analysisName,
+            analysisFilename: opts.analysisName.substring(0, 12),
             outputPath: outputPath
         });
 

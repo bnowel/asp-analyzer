@@ -25,6 +25,11 @@ function getOpts(){
         },
         after:{
             type:'string'
+        },
+        summary:{
+            type:'boolean',
+            alias:["s"],
+            default:true
         }
     });
 
@@ -85,7 +90,8 @@ function getOpts(){
         before:beforeArg,
         after:afterArg,
         compare:hasBeforeAndAfterArgs,
-        output:outputDir
+        output:outputDir,
+        summary:argv.summary
     }
 
 

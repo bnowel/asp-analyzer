@@ -14,8 +14,8 @@ var analyzeModule = function(moduleOpts) {
             return pathModule.join(outputPath, filename);
         }
 
-        const analysisJsonFilename = getOutputPath(opts.analysisFilename + ".json" || "analysis.json");
-        const analysisFilename = getOutputPath(opts.analysisFilename + ".csv" || "analysis.csv");
+        const analysisJsonFilename = getOutputPath( "analysis.json");
+        const analysisFilename = getOutputPath("analysis.csv");
 
         var statsDict = opts.statsDict || JSON.parse(fs.readFileSync(getOutputPath("statsDict.json")));
         var tree = opts.tree || JSON.parse(fs.readFileSync(getOutputPath("tree.json")));
@@ -95,6 +95,7 @@ var analyzeModule = function(moduleOpts) {
             var pathArg = runOpts.dir;
             var compare = runOpts.compare;
             var analysisNameArg = runOpts.analysisName;
+            var summaryArg = runOpts.summary
         
             if (!fs.existsSync(outputDir)) {
                 console.log("Creating output directory " + outputDir);
@@ -108,14 +109,18 @@ var analyzeModule = function(moduleOpts) {
         
                 fs.mkdirSync(beforePath);
                 fs.mkdirSync(afterPath);
-        
+                
+
+                console.log("Analyzing: " + pathArg);
+
                 await repo.checkout(beforeArg);
                 console.log("git checkout " + beforeArg);
         
                 var runBeforeOpts = {
                     path: pathArg,
                     outputPath: beforePath,
-                    analysisName: beforeArg
+                    analysisName: beforeArg,
+                    summary:false
                 }
                 var beforeStats = await asp_analyzer.analyze(runBeforeOpts);
         
@@ -125,14 +130,16 @@ var analyzeModule = function(moduleOpts) {
                 var runAfterOpts = {
                     path: pathArg,
                     outputPath: afterPath,
-                    analysisName: afterArg
+                    analysisName: afterArg,
+                    summary:false
                 }
                 var afterStats = await asp_analyzer.analyze(runAfterOpts);
         
                 compareModule.run({
                     before: beforeStats,
                     after: afterStats,
-                    outFile: pathModule.join(outputDir, "compare.csv")
+                    outFile: pathModule.join(outputDir, "compare.csv"),
+                    summary:summaryArg
                 });
             }
             else {
@@ -140,7 +147,8 @@ var analyzeModule = function(moduleOpts) {
                 var opts = {
                     path: pathArg,
                     outputPath: outputDir,
-                    analysisName: analysisNameArg
+                    analysisName: analysisNameArg,
+                    summary : summaryArg
                 }
         
                 var stats = await asp_analyzer.analyze(opts);
