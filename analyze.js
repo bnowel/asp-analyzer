@@ -6,7 +6,7 @@ var analyzeModule = function(moduleOpts) {
     const mkdirp = require('mkdirp');
     const asp_analyzer = require('./asp-analyze.js');
     const compareModule = require('./compare.js')({});
-
+    const Git = require('simple-git');
     function run(opts) {
         var outputPath = opts.outputPath || ".";
 
@@ -80,6 +80,10 @@ var analyzeModule = function(moduleOpts) {
 
         return stats;
     }
+    // Truncate the branch because it could be a SHA which would be HUGE
+    function getBranchPath(outputPath, branch) {
+        return pathModule.join(outputPath, branch.substring(0, 12));
+    }
 
     async function start(runOpts)  {
         
@@ -93,7 +97,7 @@ var analyzeModule = function(moduleOpts) {
             var analysisNameArg = runOpts.analysisName;
         
             if (!fs.existsSync(outputDir)) {
-                console.log("Creating output direcory " + outputDir);
+                console.log("Creating output directory " + outputDir);
                 mkdirp(outputDir);
             }
         
@@ -128,7 +132,7 @@ var analyzeModule = function(moduleOpts) {
                 compareModule.run({
                     before: beforeStats,
                     after: afterStats,
-                    outFile: nodePath.join(outputDir, "compare.csv")
+                    outFile: pathModule.join(outputDir, "compare.csv")
                 });
             }
             else {

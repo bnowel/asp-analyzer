@@ -7,7 +7,7 @@ function getOpts(){
     const argOpts =  buildOpts({
         path:{
             type:'string',
-            alias:['directory,dir,d'],
+            alias:['directory','dir','d'],
             default:'.'
         },
         analysisName:{
@@ -89,10 +89,7 @@ function getOpts(){
     }
 
 
-    // Truncate the branch because it could be a SHA which would be HUGE
-    function getBranchPath(outputPath, branch) {
-        return nodePath.join(outputPath, branch.substring(0, 12));
-    }
+
 
     function getDateTimeForPath() {
         var now = new Date();
