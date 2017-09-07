@@ -4,7 +4,7 @@
   "description": "TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project.",
   "repository": {},
   "license": "MIT",
-  "bin":{
+  "bin": {
     "asp-analyze": "./start.js"
   },
   "devDependencies": {
@@ -18,6 +18,7 @@
   },
   "main": "start.js",
   "dependencies": {
+    "commander": "^2.11.0",
     "count-lines-in-file": "^1.1.0",
     "glob": "^7.1.2",
     "grunt": "^0.4.5",
@@ -28,6 +29,7 @@
     "load-grunt-config": "^0.19.2",
     "load-grunt-tasks": "^3.5.2",
     "minimist": "^1.2.0",
+    "minimist-options": "^3.0.2",
     "rimraf": "^2.5.4",
     "simple-git": "^1.77.0"
   },

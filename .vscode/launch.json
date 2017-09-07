@@ -59,6 +59,15 @@
             "windows": {
                 "args": []
             }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "current",
+            "program": "${file}",
+            "windows": {
+                "args": []
+            }
         }
         
     ]

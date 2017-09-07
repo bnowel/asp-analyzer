@@ -59,10 +59,6 @@ else {
 
 outputDir = nodePath.join(outputDir, getDateTimeForPath());
 
-if (!fs.existsSync(outputDir)) {
-    console.log("Creating output direcory " + outputDir);
-    fs.mkdirSync(outputDir);
-}
 
 // Truncate the branch because it could be a SHA which would be HUGE
 function getBranchPath(outputPath, branch) {
@@ -73,6 +69,12 @@ function getDateTimeForPath() {
     var now = new Date();
     
     return now.getFullYear() + "" + (now.getMonth() + 1) + "" + now.getDate() + "-" + now.getHours() + "" + now.getMinutes() + "" + now.getSeconds();
+}
+
+
+if (!fs.existsSync(outputDir)) {
+    console.log("Creating output direcory " + outputDir);
+    fs.mkdirSync(outputDir);
 }
 
 (async() => {
