@@ -101,7 +101,7 @@ function getOpts(){
     }
 
 
-    console.log(outputOpts)
+    //console.log(outputOpts)
     return outputOpts;
 }
 
