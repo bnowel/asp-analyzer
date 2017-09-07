@@ -77,8 +77,15 @@ var analyzeModule = function(moduleOpts) {
 
         return stats;
     }
+
+    function start(){
+        
+    }
+
+
     return {
-        run: run
+        run: run,
+        start: start
     }
 }
 
