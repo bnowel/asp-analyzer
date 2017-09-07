@@ -5,6 +5,7 @@ var analyzeModule = function(moduleOpts) {
     const json2csv = require('json2csv');
     const mkdirp = require('mkdirp');
     const asp_analyzer = require('./asp-analyze.js');
+    const compareModule = require('./compare.js')({});
 
     function run(opts) {
         var outputPath = opts.outputPath || ".";
@@ -124,7 +125,7 @@ var analyzeModule = function(moduleOpts) {
                 }
                 var afterStats = await asp_analyzer.analyze(runAfterOpts);
         
-                run({
+                compareModule.run({
                     before: beforeStats,
                     after: afterStats,
                     outFile: nodePath.join(outputDir, "compare.csv")
