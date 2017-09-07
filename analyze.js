@@ -135,7 +135,7 @@ var analyzeModule = function(moduleOpts) {
                 // Operate on analysisName
                 var opts = {
                     path: pathArg,
-                    //outputPath: afterPath,
+                    outputPath: outputDir,
                     analysisName: analysisNameArg
                 }
         
