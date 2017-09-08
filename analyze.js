@@ -3,20 +3,23 @@ const defaultOpts = {
     regex : /((<!--\s*#include\s+\w+\s*=\s*")(.+.asp)("\s*-->))/g,
     defaultOutputPath:"."
 };
+
+const fs = require("fs");
+const pathModule = require("path");
+const json2csv = require("json2csv");
+const mkdirp = require("mkdirp");
+const compareModule = require("./compare.js")({});
+const Git = require("simple-git");
+const clif = require("count-lines-in-file");
+const glob = require("glob");
+const treeModule = require("./transform_tree.js");
+
 var analyzeModule = function(incomingOpts) {
     var moduleOpts = {};
     Object.assign(moduleOpts, defaultOpts, incomingOpts);
 
 
-    const fs = require("fs");
-    const pathModule = require("path");
-    const json2csv = require("json2csv");
-    const mkdirp = require("mkdirp");
-    const compareModule = require("./compare.js")({});
-    const Git = require("simple-git");
-    const clif = require("count-lines-in-file");
-    const glob = require("glob");
-    const treeModule = require("./transform_tree.js");
+
 
     function analyzeStats(opts) {
         var outputPath = opts.outputPath || moduleOpts.defaultOutputPath;

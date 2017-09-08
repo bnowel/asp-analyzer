@@ -1,7 +1,8 @@
+const defaultOpts = {};
 
-var treeModule = function(opts) {
-
-    var fileStats = {}; 
+var treeModule = function(incomingOpts) {
+    var moduleOpts = {};
+    Object.assign(moduleOpts,defaultOpts,incomingOpts);
     var treeCache = {};
         
     var statsDict = {};
@@ -38,14 +39,6 @@ var treeModule = function(opts) {
         treeCache[file] = obj;
 
         return obj;
-    }
-        
-    function lookupStats(fileName) {
-        var stats =  fileStats.find(x=>x.name == fileName);
-        if (!stats) 
-            console.log(fileName);
-
-        return stats;
     }
 
     function flattenTree(tree)
