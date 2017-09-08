@@ -1,12 +1,13 @@
-
 const nodeOs = require("os");
 const nodePath = require("path");
 const defaultOutput = "Desktop/asp-analyze";
 const commanderModule = require("commander");
 
 
+
 function getOpts(){
     
+
 
     var argArray = process.argv;
     return buildOpts(argArray,{});
@@ -41,6 +42,11 @@ function buildOpts(argv, argOpts){
     parsedArgs.path = pathArg;
     parsedArgs.dir = pathArg;
 
+function getDateTimeForPath() {
+    var now = new Date();
+    
+    return now.getFullYear() + "" + (now.getMonth() + 1) + "" + now.getDate() + "-" + now.getHours() + "" + now.getMinutes() + "" + now.getSeconds();
+}
 
     var args = {};
     Object.assign(args,parsedArgs);
@@ -76,7 +82,6 @@ function buildOpts(argv, argOpts){
     if (outputArg == defaultOutput){
         outputArg = nodePath.join(nodeOs.homedir(),outputArg);
     }
-    
     
     var outputDir = nodePath.join(outputArg, getDateTimeForPath());
     

@@ -272,6 +272,10 @@ var analyzeModule = function(incomingOpts) {
         }
         
         
+                
+
+        console.log("Analyzing: " + pathArg);
+
         // Operate on analysisName
         var opts = {
             path: pathArg,
@@ -282,7 +286,6 @@ var analyzeModule = function(incomingOpts) {
         };
     
         await analyzeFiles(opts);
-        
             
     }
 
