@@ -31,11 +31,6 @@ function getOpts(){
             type:"boolean",
             alias:["s"],
             default:true
-        },
-        warnings: {
-            type: "boolean",
-            alias: ["w"],
-            default: false
         }
     });
 
@@ -86,9 +81,7 @@ function getOpts(){
         outputArg = nodePath.join(nodeOs.homedir(),outputArg);
     }
 
-
     var outputDir = nodePath.join(outputArg, getDateTimeForPath());
-
 
     var outputOpts = {
         dir:pathArg,
@@ -97,12 +90,8 @@ function getOpts(){
         after:afterArg,
         compare:hasBeforeAndAfterArgs,
         output:outputDir,
-        summary:argv.summary,
-        warnings:argv.warnings
+        summary:argv.summary
     };
-
-
-
 
     function getDateTimeForPath() {
         var now = new Date();
