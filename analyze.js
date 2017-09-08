@@ -7,6 +7,8 @@ var analyzeModule = function(moduleOpts) {
     const asp_analyzer = require('./asp-analyze.js');
     const compareModule = require('./compare.js')({});
     const Git = require('simple-git');
+
+
     function run(opts) {
         var outputPath = opts.outputPath || ".";
 

@@ -50,7 +50,10 @@ async function analyzeStart(opts) {
             writeJsonAsync("distinctIncludes.json", flatTree)
         ]);
 
-        return statsArr;
+        return {
+            statsArr:statsArr,
+            distinctIncludes:flatTree
+        };
     } catch(e) {
         console.log(e);
     }

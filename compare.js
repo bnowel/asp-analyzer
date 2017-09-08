@@ -36,8 +36,11 @@ var compareModule = function(moduleOpts) {
     }
 
     function run(opts) {
-        var before = opts.before;
-        var after = opts.after;
+        var before = opts.before.statsArr;
+        var after = opts.after.statsArr;
+        var beforeIncludes = opts.before.distinctIncludes
+        var afterIncludes = opts.after.distinctIncludes
+
         var comparisonFilename = opts.outFile;
 
         var diffFiles = 0;
@@ -63,6 +66,38 @@ var compareModule = function(moduleOpts) {
               }, 0)/stats.length));
             console.log("Avg % reduction per file: "+ percentAvg)
         }
+
+        var filesMissingIncludes = [];
+
+        //compare distinct includes (for top level files only)
+        for (var fileName in afterIncludes ){
+            if (afterIncludes.hasOwnProperty(fileName)){
+                let afterIncludesArray = afterIncludes[fileName];
+                let beforeIncludesArray = beforeIncludes[fileName];
+                if (!!beforeIncludesArray){
+                    let missingIncludes =  beforeIncludesArray.filter((x)=> !afterIncludesArray.includes(x));
+                    if (missingIncludes.length > 0){
+                        filesMissingIncludes.push({file:fileName,missingIncludes:missingIncludes})
+                    }                    
+                }
+            }
+        }
+        for (var i = 0; i < afterIncludes.length; i++) {
+            var afterFile = after[i];
+            var beforeFile = findFileByName(before, afterFile.file);
+            var combined = combineStats(beforeFile, afterFile);
+            if (!statsEqual(combined)) {
+                diffFiles++;
+                stats.push(combined);
+            }
+        }
+
+        filesMissingIncludes.forEach(function(file) {
+            let missing = file.missingIncludes.join('\n\t'); 
+            console.warn('\n' + file.file + " is missing:")
+            console.warn('\n\t' + missing)
+        }, this);
+
     }
     return {
         run: run
