@@ -35,7 +35,7 @@ var compareModule = function(moduleOpts) {
         return combined;
     }
 
-    function run(opts) {
+    function compareStats(opts) {
         var before = opts.before.statsArr;
         var after = opts.after.statsArr;
         var beforeIncludes = opts.before.distinctIncludes
@@ -100,7 +100,7 @@ var compareModule = function(moduleOpts) {
 
     }
     return {
-        run: run
+        compareStats: compareStats
     }
 }
 
