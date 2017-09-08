@@ -13,6 +13,7 @@ const Git = require("simple-git");
 const clif = require("count-lines-in-file");
 const glob = require("glob");
 const treeModule = require("./transform_tree.js");
+const os = require('os');
 
 var analyzeModule = function(incomingOpts) {
     var moduleOpts = {};
@@ -103,6 +104,22 @@ var analyzeModule = function(incomingOpts) {
         return pathModule.join(outputPath, branch.substring(0, 12));
     }
 
+    function getWarningsFromStats(stats) {
+        var warnings = [];
+        var endOfLine = os.EOL;
+        var lbTab = endOfLine + "\t";
+
+        for (var i = 0; i < stats.length; i++) {
+            var stat = stats[i];
+            
+            if (stat.warnings.length > 0) {
+                warnings.push(stat.name + lbTab + stat.warnings.join(lbTab));
+            }
+        }
+
+        return warnings.join(endOfLine);
+    }
+
     async function analyzeFiles(opts) {
         const treeBuilder = treeModule();
         var resolvedPath = pathModule.resolve(opts.path);
@@ -121,6 +138,8 @@ var analyzeModule = function(incomingOpts) {
             allFiles = globFiles.map(function(file) {return file.toLowerCase();});
             
             var fileStats = await Promise.all(allFiles.map(buildFileStats));
+            var allWarnings = getWarningsFromStats(fileStats);
+            
 
             var totalStatsDict = convertArray(fileStats); 
             totalTree = treeBuilder.buildDictTree(totalStatsDict); 
@@ -140,7 +159,8 @@ var analyzeModule = function(incomingOpts) {
                 writeJsonAsync("fileStats.json", fileStats),
                 writeJsonAsync("statsDict.json", totalStatsDict),
                 writeJsonAsync("tree.json", totalTree),
-                writeJsonAsync("distinctIncludes.json", flatTree)
+                writeJsonAsync("distinctIncludes.json", flatTree),
+                writeTextFileAsync("warnings.txt", allWarnings)
             ]);
 
             return {
@@ -216,10 +236,14 @@ var analyzeModule = function(incomingOpts) {
         }
 
         function writeJsonAsync(filename, json, callback) {
+            return writeTextFileAsync(filename, JSON.stringify(json, null, 2), callback);
+        }
+
+        function writeTextFileAsync(filename, text, callback) {
             return new Promise(function(resolve, reject) {
                 var relativeFilename = pathModule.join(outputPath, filename);
 
-                fs.writeFile(relativeFilename, JSON.stringify(json, null, 2), (err) => {
+                fs.writeFile(relativeFilename, text, (err) => {
                     if (callback)
                         callback(err);
 
@@ -331,7 +355,8 @@ module.exports = analyzeModule;
 
 function parseFile(file, analysisRoot, moduleOpts, data, allFiles, opts, resolve, num) {
     let m;
-    let includes =[];
+    let includes = [];
+    let warnings = [];
     let dirname = pathModule.dirname(file);
     let filename = file.replace(analysisRoot, "");
     while((m = moduleOpts.regex.exec(data)) !== null) {
@@ -345,10 +370,9 @@ function parseFile(file, analysisRoot, moduleOpts, data, allFiles, opts, resolve
             includes.push(incFile);
         }
         else {
-            if(opts.warnings) {
-                console.warn("[" + file + "] '" + match + "'\n\tCan't find: " + fullIncFile);
-            }
+            var warning = "Can't find: " + fullIncFile;
+            warnings.push(warning);
         }
     }
-    resolve({ name: filename, loc: num, inc: includes });
+    resolve({ name: filename, loc: num, inc: includes, warnings: warnings });
 }
