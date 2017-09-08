@@ -3,6 +3,7 @@ const parseArgs = require("minimist");
 const nodeOs = require("os");
 const nodePath = require("path");
 const defaultOutput = "Desktop/asp-analyze";
+const commanderModule = require("commander");
 
 
 function getOpts(){
@@ -62,7 +63,11 @@ function getDateTimeForPath() {
 
 function buildOpts(argv, argOpts){
     
-    var args = parseArgs(argv.slice(2), argOpts);
+    var args = commanderModule
+    .version("1.0.0")
+    .option("--path,-p,--dir,-d,--directory", "--dir <path>")
+    .option("--analysisName, -n", "--analysisName [name]")
+    .option("--before, -b","--before ")
     
     
     

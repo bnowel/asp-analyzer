@@ -232,81 +232,93 @@ var analyzeModule = function(incomingOpts) {
         }
     }
 
-    async function start(runOpts)  {
+    async function startAnalyze(analysisOpts)  {
         
         
         
-        var outputDir = runOpts.output;
-        var beforeArg = runOpts.before;
-        var afterArg = runOpts.after;
-        var pathArg = runOpts.dir;
-        var compare = runOpts.compare;
-        var analysisNameArg = runOpts.analysisName;
-        var summaryArg = runOpts.summary;
+        var outputDir = analysisOpts.output;
+        var pathArg = analysisOpts.dir;
+        var analysisNameArg = analysisOpts.analysisName;
+        var summaryArg = analysisOpts.summary;
         
         if (!fs.existsSync(outputDir)) {
             console.log("Creating output directory " + outputDir);
             mkdirp(outputDir);
         }
         
-        if (compare) {
-            var repo = Git(pathArg);
-            var beforePath = getBranchPath(outputDir, beforeArg);
-            var afterPath = getBranchPath(outputDir, afterArg);
         
-            mkdirp(beforePath);
-            mkdirp(afterPath);
-                
-
-            console.log("Analyzing: " + pathArg);
-
-            await repo.checkout(beforeArg);
-            console.log("git checkout " + beforeArg);
+        // Operate on analysisName
+        var opts = {
+            path: pathArg,
+            outputPath: outputDir,
+            analysisName: analysisNameArg,
+            summary : summaryArg
+        };
+    
+        await analyzeFiles(opts);
         
-            var runBeforeOpts = {
-                path: pathArg,
-                outputPath: beforePath,
-                analysisName: beforeArg,
-                summary:false
-            };
-            var beforeStats = await analyzeFiles(runBeforeOpts);
-        
-            await repo.checkout(afterArg);
-            console.log("git checkout " + afterArg);
-        
-            var runAfterOpts = {
-                path: pathArg,
-                outputPath: afterPath,
-                analysisName: afterArg,
-                summary:false
-            };
-            var afterStats = await analyzeFiles(runAfterOpts);
-        
-            compareModule.compareStats({
-                before: beforeStats,
-                after: afterStats,
-                outFile: pathModule.join(outputDir, "compare.csv"),
-                summary:summaryArg
-            });
-        }
-        else {
-            // Operate on analysisName
-            var opts = {
-                path: pathArg,
-                outputPath: outputDir,
-                analysisName: analysisNameArg,
-                summary : summaryArg
-            };
-        
-            await analyzeFiles(opts);
-        }
             
     }
 
+    async function startCompare(compareOpts)  {
+        
+        var outputDir = compareOpts.output;
+        var beforeArg = compareOpts.before;
+        var afterArg = compareOpts.after;
+        var pathArg = compareOpts.dir;
+        var summaryArg = compareOpts.summary;
+        
+        if (!fs.existsSync(outputDir)) {
+            console.log("Creating output directory " + outputDir);
+            mkdirp(outputDir);
+        }
+        
+        var repo = Git(pathArg);
+        var beforePath = getBranchPath(outputDir, beforeArg);
+        var afterPath = getBranchPath(outputDir, afterArg);
+
+        mkdirp(beforePath);
+        mkdirp(afterPath);
+    
+
+        console.log("Analyzing: " + pathArg);
+
+        await repo.checkout(beforeArg);
+        console.log("git checkout " + beforeArg);
+
+        var runBeforeOpts = {
+            path: pathArg,
+            outputPath: beforePath,
+            analysisName: beforeArg,
+            summary:false
+        };
+        var beforeStats = await analyzeFiles(runBeforeOpts);
+
+        await repo.checkout(afterArg);
+        console.log("git checkout " + afterArg);
+
+        var runAfterOpts = {
+            path: pathArg,
+            outputPath: afterPath,
+            analysisName: afterArg,
+            summary:false
+        };
+        var afterStats = await analyzeFiles(runAfterOpts);
+
+        compareModule.compareStats({
+            before: beforeStats,
+            after: afterStats,
+            outFile: pathModule.join(outputDir, "compare.csv"),
+            summary:summaryArg
+        });
+
+            
+    }
 
     return {
         analyzeStats: analyzeStats,
-        start: start,
+        startAnalyze: startAnalyze,
+        startCompare: startCompare,
         parseFile:parseFile
     };
 };

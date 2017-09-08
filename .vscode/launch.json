@@ -34,9 +34,9 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Start 1",
-            "program": "${workspaceRoot}/start.1.js",
-            "args": ["--path=sample_asp","--analysisName=test"],
+            "name": "Launch builder",
+            "program": "${workspaceRoot}/Scratch_Tests/opts_builder.js",
+            "args": ["--dir", ".","--before" ,"asdfg "],
             "windows": {
                 "args": ["--path", "sample_asp"]
             }

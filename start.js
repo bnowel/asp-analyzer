@@ -3,5 +3,9 @@
 const asp_analyzer = require("./analyze.js")({});
 const optsBuilder = require("./opts_builder.js");
 
-asp_analyzer.start(optsBuilder.getOpts());
-
+var opts = optsBuilder.getOpts();
+if (opts.before){
+    asp_analyzer.startCompare();    
+}else{
+    asp_analyzer.startAnalyze();    
+}
