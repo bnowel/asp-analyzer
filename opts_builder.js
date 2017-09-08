@@ -46,7 +46,12 @@ function getOpts(){
         opts['--'] - when true, populate argv._ with everything before the -- and argv['--'] with everything after the --. Here's an example:
         opts.unknown - a function which is invoked with a command line parameter not defined in the opts configuration object. If the function returns false, the unknown option is not added to argv.
     */
-    var argv = parseArgs(process.argv.slice(2), argOpts);
+
+    var argArray = process.argv.slice(2);
+
+    var argv = parseArgs(argArray, argOpts);
+
+
 
     var pathArg = argv.path;
     if (!pathArg) {
@@ -68,7 +73,6 @@ function getOpts(){
         }
     }
 
-    // Leave the repo as it is or maybe it's not even a repo :)
     var analysisNameArg = argv.analysisName;
     if (!analysisNameArg && !hasBeforeAndAfterArgs) {
         console.error("--analysisName is required");
@@ -98,17 +102,21 @@ function getOpts(){
 
 
 
-    function getDateTimeForPath() {
-        var now = new Date();
-        
-        return now.getFullYear() + "" + (now.getMonth() + 1) + "" + now.getDate() + "-" + now.getHours() + "" + now.getMinutes() + "" + now.getSeconds();
-    }
+    
 
 
     //console.log(outputOpts)
     return outputOpts;
 }
 
+
+function getDateTimeForPath() {
+    var now = new Date();
+    
+    return now.getFullYear() + "" + (now.getMonth() + 1) + "" + now.getDate() + "-" + now.getHours() + "" + now.getMinutes() + "" + now.getSeconds();
+}
+
 module.exports = {
-    getOpts : getOpts
+    getOpts : getOpts,
+    buildOpts : buildOpts
 };
