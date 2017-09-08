@@ -31,6 +31,11 @@ function getOpts(){
             type:"boolean",
             alias:["s"],
             default:true
+        },
+        warnings: {
+            type: "boolean",
+            alias: ["w"],
+            default: false
         }
     });
 
@@ -92,7 +97,8 @@ function getOpts(){
         after:afterArg,
         compare:hasBeforeAndAfterArgs,
         output:outputDir,
-        summary:argv.summary
+        summary:argv.summary,
+        warnings:argv.warnings
     };
 
 
