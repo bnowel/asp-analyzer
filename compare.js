@@ -1,9 +1,15 @@
-const fs = require('fs');
-const json2csv = require('json2csv');
+const fs = require("fs");
+const json2csv = require("json2csv");
 
-var compareModule = function(moduleOpts) {
+const defaultOpts = {
+    showMissing : true
+};
+
+var compareModule = function(incomingOpts) {
+    var moduleOpts = {};
+    Object.assign(moduleOpts,defaultOpts,incomingOpts);
+
     var fields = ["file", "num_refs_before", "num_refs_after", "includes_before", "includes_after", "total_loc_before", "total_loc_after", "loc_delta", "loc_delta_%"];
-    var comparison = [];
 
     function findFileByName(arr, filename) {
         return arr.find(function(element) {
@@ -29,7 +35,7 @@ var compareModule = function(moduleOpts) {
         combined[fields[6]] = afterFile.total_loc;
         let delta = afterFile.total_loc - beforeFile.total_loc;
         combined[fields[7]] = delta;
-        let percent = (Math.round(1000*delta/beforeFile.total_loc)/1000)
+        let percent = (Math.round(1000*delta/beforeFile.total_loc)/1000);
         combined[fields[8]] = percent;
 
         return combined;
@@ -38,18 +44,18 @@ var compareModule = function(moduleOpts) {
     function compareStats(opts) {
         var before = opts.before.statsArr;
         var after = opts.after.statsArr;
-        var beforeIncludes = opts.before.distinctIncludes
-        var afterIncludes = opts.after.distinctIncludes
+        var beforeIncludes = opts.before.distinctIncludes;
+        var afterIncludes = opts.after.distinctIncludes;
 
         var comparisonFilename = opts.outFile;
 
         var diffFiles = 0;
         var stats = [];
 
-        for (var i = 0; i < after.length; i++) {
-            var afterFile = after[i];
-            var beforeFile = findFileByName(before, afterFile.file);
-            var combined = combineStats(beforeFile, afterFile);
+        for (let i = 0; i < after.length; i++) {
+            let afterFile = after[i];
+            let beforeFile = findFileByName(before, afterFile.file);
+            let combined = combineStats(beforeFile, afterFile);
             if (!statsEqual(combined)) {
                 diffFiles++;
                 stats.push(combined);
@@ -63,8 +69,8 @@ var compareModule = function(moduleOpts) {
             console.log(diffFiles + " files changed");
             var percentAvg = Math.round(100*(stats.map(x=>x[fields[8]]).reduce(function(sum, value) {
                 return sum + value;
-              }, 0)/stats.length));
-            console.log("Avg % reduction per file: "+ percentAvg)
+            }, 0)/stats.length));
+            console.log("Avg % reduction per file: "+ percentAvg+"%");
         }
 
         var filesMissingIncludes = [];
@@ -74,34 +80,37 @@ var compareModule = function(moduleOpts) {
             if (afterIncludes.hasOwnProperty(fileName)){
                 let afterIncludesArray = afterIncludes[fileName];
                 let beforeIncludesArray = beforeIncludes[fileName];
-                if (!!beforeIncludesArray){
+                if (beforeIncludesArray){
                     let missingIncludes =  beforeIncludesArray.filter((x)=> !afterIncludesArray.includes(x));
                     if (missingIncludes.length > 0){
-                        filesMissingIncludes.push({file:fileName,missingIncludes:missingIncludes})
+                        filesMissingIncludes.push({file:fileName,missingIncludes:missingIncludes});
                     }                    
                 }
             }
         }
-        for (var i = 0; i < afterIncludes.length; i++) {
-            var afterFile = after[i];
-            var beforeFile = findFileByName(before, afterFile.file);
-            var combined = combineStats(beforeFile, afterFile);
+        for (let i = 0; i < afterIncludes.length; i++) {
+            let afterFile = after[i];
+            let beforeFile = findFileByName(before, afterFile.file);
+            let combined = combineStats(beforeFile, afterFile);
             if (!statsEqual(combined)) {
                 diffFiles++;
                 stats.push(combined);
             }
         }
 
-        filesMissingIncludes.forEach(function(file) {
-            let missing = file.missingIncludes.join('\n\t'); 
-            console.warn('\n' + file.file + " is missing:")
-            console.warn('\n\t' + missing)
-        }, this);
+        if(moduleOpts.showMissing){
+            filesMissingIncludes.forEach(function(file) {
+                let missing = file.missingIncludes.join("\n\t"); 
+                console.warn("\n" + file.file + " is missing:");
+                console.warn("\n\t" + missing);
+            }, this);
+        }
+        
 
     }
     return {
         compareStats: compareStats
-    }
-}
+    };
+};
 
 module.exports = compareModule;

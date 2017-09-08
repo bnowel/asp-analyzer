@@ -1,19 +1,25 @@
+const defaultOpts = {
+    globOptions : {realpath: true},
+    regex : /((<!--\s*#include\s+\w+\s*=\s*")(.+.asp)("\s*-->))/g,
+    defaultOutputPath:"."
+};
+var analyzeModule = function(incomingOpts) {
+    var moduleOpts = {};
+    Object.assign(moduleOpts, defaultOpts, incomingOpts);
 
-var analyzeModule = function(moduleOpts) {
-    const fs = require('fs');
-    const pathModule = require('path');
-    const json2csv = require('json2csv');
-    const mkdirp = require('mkdirp');
-    const compareModule = require('./compare.js')({});
-    const Git = require('simple-git');
-    const clif = require('count-lines-in-file');
+
+    const fs = require("fs");
+    const pathModule = require("path");
+    const json2csv = require("json2csv");
+    const mkdirp = require("mkdirp");
+    const compareModule = require("./compare.js")({});
+    const Git = require("simple-git");
+    const clif = require("count-lines-in-file");
     const glob = require("glob");
     const treeModule = require("./transform_tree.js");
-    const globOptions = {realpath: true};
-    const regex = /((<!--\s*#include\s+\w+\s*=\s*")(.+.asp)("\s*-->))/g;
 
     function analyzeStats(opts) {
-        var outputPath = opts.outputPath || ".";
+        var outputPath = opts.outputPath || moduleOpts.defaultOutputPath;
 
         function getOutputPath(filename) {
             return pathModule.join(outputPath, filename);
@@ -51,12 +57,12 @@ var analyzeModule = function(moduleOpts) {
             if (typeof allRefs[file] === "undefined")
                 allRefs[file] = 0;
             else
-                allRefs[file]++
+                allRefs[file]++;
         }
 
         for (var file in tree) {
             if (tree.hasOwnProperty(file)) {
-                var stat = {};
+                let stat = {};
                 stat[fields[0]] = file;
                 stat[fields[2]] = statsDict[file].inc.length;
                 stat[fields[3]] = statsDict[file].loc;
@@ -69,7 +75,7 @@ var analyzeModule = function(moduleOpts) {
         }
 
         for (var i = 0; i < stats.length; i++) {
-            var stat = stats[i];
+            let stat = stats[i];
             
             stat[fields[1]] = allRefs[stat[fields[0]]];
         }
@@ -103,9 +109,9 @@ var analyzeModule = function(moduleOpts) {
         var totalTree;
         
         try {
-            var globFiles = await globAsync(opts.path + "/**/*.asp", globOptions)
+            var globFiles = await globAsync(opts.path + "/**/*.asp", moduleOpts.globOptions);
             
-            allFiles = globFiles.map(function(file) {return file.toLowerCase()});
+            allFiles = globFiles.map(function(file) {return file.toLowerCase();});
             
             var fileStats = await Promise.all(allFiles.map(buildFileStats));
 
@@ -153,7 +159,7 @@ var analyzeModule = function(moduleOpts) {
                 topLevelTree[file] = totalTree[file];
             }
         
-            return treeBuilder.flattenTree(topLevelTree)
+            return treeBuilder.flattenTree(topLevelTree);
         }
         
         function buildFileStats(file) {
@@ -164,18 +170,18 @@ var analyzeModule = function(moduleOpts) {
                     fs.readFile(file, function(err, data){
                         let m;
                         let includes = [];
-                        let dirname = pathModule.dirname(file)
-                        let filename = file.replace(analysisRoot, "")
-                        while ((m = regex.exec(data)) !== null) {
+                        let dirname = pathModule.dirname(file);
+                        let filename = file.replace(analysisRoot, "");
+                        while ((m = moduleOpts.regex.exec(data)) !== null) {
                             let match = m[3];
-                            let fullIncFile = match.startsWith("/") ? pathModule.resolve(analysisRoot, match.substring(1)) : pathModule.resolve(dirname, match)
-                            let incFile = fullIncFile.toLowerCase().replace(analysisRoot, "")
+                            let fullIncFile = match.startsWith("/") ? pathModule.resolve(analysisRoot, match.substring(1)) : pathModule.resolve(dirname, match);
+                            let incFile = fullIncFile.toLowerCase().replace(analysisRoot, "");
                             
                             // Make sure that the reference we resolve exists on the filesystem
                             var fileExists = allFiles.find(x => x == fullIncFile.toLowerCase());
                             if (fileExists) {
                                 // Add only valid includes
-                                includes.push(incFile)
+                                includes.push(incFile);
                             }
                             else {
                                 if (opts.warnings){
@@ -183,9 +189,9 @@ var analyzeModule = function(moduleOpts) {
                                 }
                             }
                         }
-                        resolve({name: filename, loc: num, inc: includes})
+                        resolve({name: filename, loc: num, inc: includes});
                     });
-                });
+                }).catch(reject);
             });
         }
         
@@ -223,26 +229,12 @@ var analyzeModule = function(moduleOpts) {
             });
         }
 
-        function writeFileAsync(filename, content, callback) {
-            return new Promise(function(resolve, reject) {
-                fs.writeFile(filename, content, (err) => {
-                    if (!!callback)
-                        callback(err);
-
-                    if (err)
-                        reject(err);
-                    else
-                        resolve();
-                });
-            });
-        }
-
         function writeJsonAsync(filename, json, callback) {
             return new Promise(function(resolve, reject) {
                 var relativeFilename = pathModule.join(outputPath, filename);
 
                 fs.writeFile(relativeFilename, JSON.stringify(json, null, 2), (err) => {
-                    if (!!callback)
+                    if (callback)
                         callback(err);
 
                     if (err)
@@ -258,78 +250,78 @@ var analyzeModule = function(moduleOpts) {
         
         
         
-            var outputDir = runOpts.output;
-            var beforeArg = runOpts.before;
-            var afterArg = runOpts.after;
-            var pathArg = runOpts.dir;
-            var compare = runOpts.compare;
-            var analysisNameArg = runOpts.analysisName;
-            var summaryArg = runOpts.summary
+        var outputDir = runOpts.output;
+        var beforeArg = runOpts.before;
+        var afterArg = runOpts.after;
+        var pathArg = runOpts.dir;
+        var compare = runOpts.compare;
+        var analysisNameArg = runOpts.analysisName;
+        var summaryArg = runOpts.summary;
         
-            if (!fs.existsSync(outputDir)) {
-                console.log("Creating output directory " + outputDir);
-                mkdirp(outputDir);
-            }
+        if (!fs.existsSync(outputDir)) {
+            console.log("Creating output directory " + outputDir);
+            mkdirp(outputDir);
+        }
         
-            if (beforeArg) {
-                var repo = Git(pathArg);
-                var beforePath = getBranchPath(outputDir, beforeArg);
-                var afterPath = getBranchPath(outputDir, afterArg);
+        if (compare) {
+            var repo = Git(pathArg);
+            var beforePath = getBranchPath(outputDir, beforeArg);
+            var afterPath = getBranchPath(outputDir, afterArg);
         
-                mkdirp(beforePath);
-                mkdirp(afterPath);
+            mkdirp(beforePath);
+            mkdirp(afterPath);
                 
 
-                console.log("Analyzing: " + pathArg);
+            console.log("Analyzing: " + pathArg);
 
-                await repo.checkout(beforeArg);
-                console.log("git checkout " + beforeArg);
+            await repo.checkout(beforeArg);
+            console.log("git checkout " + beforeArg);
         
-                var runBeforeOpts = {
-                    path: pathArg,
-                    outputPath: beforePath,
-                    analysisName: beforeArg,
-                    summary:false
-                }
-                var beforeStats = await analyzeFiles(runBeforeOpts);
+            var runBeforeOpts = {
+                path: pathArg,
+                outputPath: beforePath,
+                analysisName: beforeArg,
+                summary:false
+            };
+            var beforeStats = await analyzeFiles(runBeforeOpts);
         
-                await repo.checkout(afterArg);
-                console.log("git checkout " + afterArg);
+            await repo.checkout(afterArg);
+            console.log("git checkout " + afterArg);
         
-                var runAfterOpts = {
-                    path: pathArg,
-                    outputPath: afterPath,
-                    analysisName: afterArg,
-                    summary:false
-                }
-                var afterStats = await analyzeFiles(runAfterOpts);
+            var runAfterOpts = {
+                path: pathArg,
+                outputPath: afterPath,
+                analysisName: afterArg,
+                summary:false
+            };
+            var afterStats = await analyzeFiles(runAfterOpts);
         
-                compareModule.compareStats({
-                    before: beforeStats,
-                    after: afterStats,
-                    outFile: pathModule.join(outputDir, "compare.csv"),
-                    summary:summaryArg
-                });
-            }
-            else {
-                // Operate on analysisName
-                var opts = {
-                    path: pathArg,
-                    outputPath: outputDir,
-                    analysisName: analysisNameArg,
-                    summary : summaryArg
-                }
-        
-                var stats = await analyzeFiles(opts);
-            }
-            
+            compareModule.compareStats({
+                before: beforeStats,
+                after: afterStats,
+                outFile: pathModule.join(outputDir, "compare.csv"),
+                summary:summaryArg
+            });
         }
+        else {
+            // Operate on analysisName
+            var opts = {
+                path: pathArg,
+                outputPath: outputDir,
+                analysisName: analysisNameArg,
+                summary : summaryArg
+            };
+        
+            await analyzeFiles(opts);
+        }
+            
+    }
 
 
     return {
         analyzeStats: analyzeStats,
         start: start
-    }
-}
+    };
+};
 
 module.exports = analyzeModule;

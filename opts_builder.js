@@ -1,33 +1,34 @@
-const buildOpts = require('minimist-options')
-const parseArgs = require('minimist')
+const buildOpts = require("minimist-options");
+const parseArgs = require("minimist");
 const nodeOs = require("os");
 const nodePath = require("path");
 const defaultOutput = "Desktop/asp-analyze";
+
 function getOpts(){
     const argOpts =  buildOpts({
         path:{
-            type:'string',
-            alias:['directory','dir','d'],
-            default:'.'
+            type:"string",
+            alias:["directory","dir","d"],
+            default:"."
         },
         analysisName:{
-            type:'string',
+            type:"string",
             alias:["n"],
             default:"ASP-Analysis"
         },
         output:{
-            type:'string',
+            type:"string",
             alias:["o"],
             default:defaultOutput
         },
         before:{
-            type:'string'
+            type:"string"
         },
         after:{
-            type:'string'
+            type:"string"
         },
         summary:{
-            type:'boolean',
+            type:"boolean",
             alias:["s"],
             default:true
         }
@@ -45,7 +46,7 @@ function getOpts(){
         opts['--'] - when true, populate argv._ with everything before the -- and argv['--'] with everything after the --. Here's an example:
         opts.unknown - a function which is invoked with a command line parameter not defined in the opts configuration object. If the function returns false, the unknown option is not added to argv.
     */
-    var argv = parseArgs(process.argv.slice(2), argOpts)
+    var argv = parseArgs(process.argv.slice(2), argOpts);
 
     var pathArg = argv.path;
     if (!pathArg) {
@@ -77,7 +78,7 @@ function getOpts(){
 
     var outputArg = argv.output;
     if (outputArg == defaultOutput){
-        outputArg = nodePath.join(nodeOs.homedir(),outputArg)
+        outputArg = nodePath.join(nodeOs.homedir(),outputArg);
     }
 
 
@@ -92,7 +93,7 @@ function getOpts(){
         compare:hasBeforeAndAfterArgs,
         output:outputDir,
         summary:argv.summary
-    }
+    };
 
 
 
@@ -110,4 +111,4 @@ function getOpts(){
 
 module.exports = {
     getOpts : getOpts
-}
+};
