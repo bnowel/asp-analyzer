@@ -7,15 +7,7 @@
   "bin": {
     "asp-analyze": "./start.js"
   },
-  "devDependencies": {
-    "grunt": "0.4.5",
-    "grunt-concurrent": "*",
-    "grunt-execute": "0.2.2",
-    "jit-grunt": "0.10.0",
-    "load-grunt-config": "0.19.2",
-    "load-grunt-tasks": "*",
-    "rimraf": "2.5.4"
-  },
+  "devDependencies": {},
   "main": "start.js",
   "dependencies": {
     "commander": "^2.11.0",
@@ -35,7 +27,7 @@
     "simple-git": "1.71.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node ./tests/*.js"
   },
   "author": "bnowel",
   "keywords": [

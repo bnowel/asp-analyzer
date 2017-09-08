@@ -31,8 +31,12 @@ var analyzeModule = function(incomingOpts) {
         const analysisJsonFilename = getOutputPath( "analysis.json");
         const analysisFilename = getOutputPath("analysis.csv");
 
-        var statsDict = opts.statsDict || JSON.parse(fs.readFileSync(getOutputPath("statsDict.json")));
-        var tree = opts.tree || JSON.parse(fs.readFileSync(getOutputPath("tree.json")));
+        //We should leave this up to the caller
+        // var statsDict = opts.statsDict || JSON.parse(fs.readFileSync(getOutputPath("statsDict.json")));
+        // var tree = opts.tree || JSON.parse(fs.readFileSync(getOutputPath("tree.json")));        
+        
+        var statsDict = opts.statsDict;
+        var tree = opts.tree;
 
         function getLinesOfCode(file, fileTree) {
             var locInIncludes = 0;
@@ -171,28 +175,7 @@ var analyzeModule = function(incomingOpts) {
                 clifAsync(file).then((num) => {
         
                     fs.readFile(file, function(err, data){
-                        let m;
-                        let includes = [];
-                        let dirname = pathModule.dirname(file);
-                        let filename = file.replace(analysisRoot, "");
-                        while ((m = moduleOpts.regex.exec(data)) !== null) {
-                            let match = m[3];
-                            let fullIncFile = match.startsWith("/") ? pathModule.resolve(analysisRoot, match.substring(1)) : pathModule.resolve(dirname, match);
-                            let incFile = fullIncFile.toLowerCase().replace(analysisRoot, "");
-                            
-                            // Make sure that the reference we resolve exists on the filesystem
-                            var fileExists = allFiles.find(x => x == fullIncFile.toLowerCase());
-                            if (fileExists) {
-                                // Add only valid includes
-                                includes.push(incFile);
-                            }
-                            else {
-                                if (opts.warnings){
-                                    console.warn("[" + file + "] '" + match + "'\n\tCan't find: " + fullIncFile);
-                                }
-                            }
-                        }
-                        resolve({name: filename, loc: num, inc: includes});
+                        parseFile(file, analysisRoot, moduleOpts, data, allFiles, opts, resolve, num);
                     });
                 }).catch(reject);
             });
@@ -323,8 +306,33 @@ var analyzeModule = function(incomingOpts) {
 
     return {
         analyzeStats: analyzeStats,
-        start: start
+        start: start,
+        parseFile:parseFile
     };
 };
 
 module.exports = analyzeModule;
+
+function parseFile(file, analysisRoot, moduleOpts, data, allFiles, opts, resolve, num) {
+    let m;
+    let includes =[];
+    let dirname = pathModule.dirname(file);
+    let filename = file.replace(analysisRoot, "");
+    while((m = moduleOpts.regex.exec(data)) !== null) {
+        let match = m[3];
+        let fullIncFile = match.startsWith("/")?pathModule.resolve(analysisRoot, match.substring(1)): pathModule.resolve(dirname, match);
+        let incFile = fullIncFile.toLowerCase().replace(analysisRoot, "");
+        // Make sure that the reference we resolve exists on the filesystem
+        var fileExists = allFiles.find(x => x == fullIncFile.toLowerCase());
+        if(fileExists) {
+            // Add only valid includes
+            includes.push(incFile);
+        }
+        else {
+            if(opts.warnings) {
+                console.warn("[" + file + "] '" + match + "'\n\tCan't find: " + fullIncFile);
+            }
+        }
+    }
+    resolve({ name: filename, loc: num, inc: includes });
+}

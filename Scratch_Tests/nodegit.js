@@ -17,7 +17,7 @@ Git.Repository.open(pathToRepo).then(function (repo) {
         return repo.checkoutRef(reference);
     }).catch(function(err) {
         // Failed to check out a git branch
-        console.log("Didn't find a branch '" + branch + "'")
+        console.log("Didn't find a branch '" + branch + "'");
         
         // Try it as a direct reference
         repo.getCommit(branch).then(function(commit) {
@@ -29,7 +29,7 @@ Git.Repository.open(pathToRepo).then(function (repo) {
             console.log("didn't find hash " + branch);
             console.log(err.message);
         });
-    })
+    });
 }).catch(function(err) {
     // Failed to open the git repository
     console.log(err.message);
