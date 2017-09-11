@@ -13,7 +13,7 @@ const Git = require("simple-git");
 const clif = require("count-lines-in-file");
 const glob = require("glob");
 const treeModule = require("./transform_tree.js");
-const os = require('os');
+const os = require("os");
 
 var analyzeModule = function(incomingOpts) {
     var moduleOpts = {};
@@ -163,6 +163,10 @@ var analyzeModule = function(incomingOpts) {
                 writeTextFileAsync("warnings.txt", allWarnings)
             ]);
 
+            if (opts.warnings){
+                console.warn(allWarnings);
+            }
+
             return {
                 statsArr:statsArr,
                 distinctIncludes:flatTree
@@ -285,7 +289,7 @@ var analyzeModule = function(incomingOpts) {
     
         await analyzeFiles(opts);
 
-            
+
     }
 
     async function startCompare(compareOpts)  {
@@ -296,13 +300,6 @@ var analyzeModule = function(incomingOpts) {
         var pathArg = compareOpts.dir;
         var summaryArg = compareOpts.summary;
         var warnings = compareOpts.warnings;
-            var runAfterOpts = {
-                path: pathArg,
-                outputPath: afterPath,
-                analysisName: afterArg,
-                summary: false
-            };
-            var afterStats = await analyzeFiles(runAfterOpts);
 
         
         if (!fs.existsSync(outputDir)) {
@@ -328,7 +325,7 @@ var analyzeModule = function(incomingOpts) {
             outputPath: beforePath,
             analysisName: beforeArg,
             summary:false,
-            warnings: warnings
+            warnings: false
         };
         var beforeStats = await analyzeFiles(runBeforeOpts);
 
@@ -339,7 +336,8 @@ var analyzeModule = function(incomingOpts) {
             path: pathArg,
             outputPath: afterPath,
             analysisName: afterArg,
-            summary:false
+            summary:false,
+            warnings: false
         };
         var afterStats = await analyzeFiles(runAfterOpts);
 
@@ -347,7 +345,8 @@ var analyzeModule = function(incomingOpts) {
             before: beforeStats,
             after: afterStats,
             outFile: pathModule.join(outputDir, "compare.csv"),
-            summary:summaryArg
+            summary:summaryArg,
+            warnings: warnings
         });
 
             

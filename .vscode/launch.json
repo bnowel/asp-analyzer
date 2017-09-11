@@ -36,7 +36,7 @@
             "request": "launch",
             "name": "Launch builder",
             "program": "${workspaceRoot}/Scratch_Tests/opts_builder.js",
-            "args": ["--dir", ".","--before" ,"asdfg "],
+            "args": ["--dir", ".","--before" ,"asdfg ", "-w"],
             "windows": {
                 "args": ["--path", "sample_asp"]
             }
