@@ -42,11 +42,6 @@ function buildOpts(argv, argOpts){
     parsedArgs.path = pathArg;
     parsedArgs.dir = pathArg;
 
-function getDateTimeForPath() {
-    var now = new Date();
-    
-    return now.getFullYear() + "" + (now.getMonth() + 1) + "" + now.getDate() + "-" + now.getHours() + "" + now.getMinutes() + "" + now.getSeconds();
-}
 
     var args = {};
     Object.assign(args,parsedArgs);
