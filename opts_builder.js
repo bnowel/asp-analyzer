@@ -1,63 +1,61 @@
-const buildOpts = require("minimist-options");
-const parseArgs = require("minimist");
 const nodeOs = require("os");
 const nodePath = require("path");
 const defaultOutput = "Desktop/asp-analyze";
+const commanderModule = require("commander");
+
+
 
 function getOpts(){
-    const argOpts =  buildOpts({
-        path:{
-            type:"string",
-            alias:["directory","dir","d"],
-            default:"."
-        },
-        analysisName:{
-            type:"string",
-            alias:["n"],
-            default:"ASP-Analysis"
-        },
-        output:{
-            type:"string",
-            alias:["o"],
-            default:defaultOutput
-        },
-        before:{
-            type:"string"
-        },
-        after:{
-            type:"string"
-        },
-        summary:{
-            type:"boolean",
-            alias:["s"],
-            default:true
-        }
-    });
+    
 
 
+    var argArray = process.argv;
+    return buildOpts(argArray,{});
+}
 
 
-    /*  command line arg options
-        opts.string - a string or array of strings argument names to always treat as strings
-        opts.boolean - a boolean, string or array of strings to always treat as booleans. if true will treat all double hyphenated arguments without equal signs as boolean (e.g. affects --foo, not -f or --foo=bar)
-        opts.alias - an object mapping string names to strings or arrays of string argument names to use as aliases
-        opts.default - an object mapping string argument names to default values
-        opts.stopEarly - when true, populate argv._ with everything after the first non-option
-        opts['--'] - when true, populate argv._ with everything before the -- and argv['--'] with everything after the --. Here's an example:
-        opts.unknown - a function which is invoked with a command line parameter not defined in the opts configuration object. If the function returns false, the unknown option is not added to argv.
-    */
-    var argv = parseArgs(process.argv.slice(2), argOpts);
+function getDateTimeForPath() {
+    var now = new Date();
+    
+    return now.getFullYear() + "" + (now.getMonth() + 1) + "" + now.getDate() + "-" + now.getHours() + "" + now.getMinutes() + "" + now.getSeconds();
+}
 
-    var pathArg = argv.path;
+
+function buildOpts(argv, argOpts){
+    var opts = {};
+    Object.assign(opts,argOpts);
+    var parsedArgs = commanderModule
+        .version("1.0.0")
+        .option("-p,--dir,--path <path>", "--path <path>",".")
+        .option("-n,--analysisName <name>", "--analysisName <name>","ASP-Analysis")
+        .option("-b,--before <name>","--before [name] ")
+        .option("-a, --after <name>","--after [name] ")
+        .option("-o, --output <path>"," output directory",defaultOutput)
+        .option("-s, --summary"," show summary", true)
+        .option("-ws, --warnings"," show warnings", false)
+        .parse(process.argv);
+    
+    
+
+    var pathArg = parsedArgs.path || parsedArgs.dir;
+
+    parsedArgs.path = pathArg;
+    parsedArgs.dir = pathArg;
+
+
+    var args = {};
+    Object.assign(args,parsedArgs);
     if (!pathArg) {
         console.error("--path is required");
         return;
     }
-
-    var beforeArg = argv.before;
-    var afterArg = argv.after;
+    
+    var beforeArg = args.before;
+    var afterArg = args.after;
     var hasBeforeAndAfterArgs = false;
-
+    
+    
+            
     // These are git references (branch or SHA)
     if ((!afterArg && !!beforeArg) || (!!afterArg && !beforeArg)) {
         console.error("Must pass --before and --after");
@@ -67,22 +65,20 @@ function getOpts(){
             hasBeforeAndAfterArgs = true;        
         }
     }
-
-    // Leave the repo as it is or maybe it's not even a repo :)
-    var analysisNameArg = argv.analysisName;
+    
+    var analysisNameArg = args.analysisName;
     if (!analysisNameArg && !hasBeforeAndAfterArgs) {
         console.error("--analysisName is required");
         return;
     }
-
-
-    var outputArg = argv.output;
+    
+    
+    var outputArg = args.output;
     if (outputArg == defaultOutput){
         outputArg = nodePath.join(nodeOs.homedir(),outputArg);
     }
-
     var outputDir = nodePath.join(outputArg, getDateTimeForPath());
-
+    
     var outputOpts = {
         dir:pathArg,
         analysisName:analysisNameArg,
@@ -90,20 +86,17 @@ function getOpts(){
         after:afterArg,
         compare:hasBeforeAndAfterArgs,
         output:outputDir,
-        summary:argv.summary
+        summary:argv.summary,
+        warnings:argv.warnings
     };
-
-    function getDateTimeForPath() {
-        var now = new Date();
-        
-        return now.getFullYear() + "" + (now.getMonth() + 1) + "" + now.getDate() + "-" + now.getHours() + "" + now.getMinutes() + "" + now.getSeconds();
-    }
-
-
-    //console.log(outputOpts)
+    
+    
+        //console.log(outputOpts)
     return outputOpts;
 }
 
+
 module.exports = {
-    getOpts : getOpts
+    getOpts : getOpts,
+    buildOpts : buildOpts
 };
