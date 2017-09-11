@@ -1,56 +1,15 @@
-const minOpts = require("minimist-options");
-const parseArgs = require("minimist");
+
 const nodeOs = require("os");
 const nodePath = require("path");
 const defaultOutput = "Desktop/asp-analyze";
+const commanderModule = require("commander");
 
 
 function getOpts(){
     
 
-    const argOpts =  minOpts({
-        path:{
-            type:"string",
-            alias:["directory","dir","d"],
-            default:"."
-        },
-        analysisName:{
-            type:"string",
-            alias:["n"],
-            default:"ASP-Analysis"
-        },
-        output:{
-            type:"string",
-            alias:["o"],
-            default:defaultOutput
-        },
-        before:{
-            type:"string"
-        },
-        after:{
-            type:"string"
-        },
-        summary:{
-            type:"boolean",
-            alias:["s"],
-            default:true
-        }
-    });
-
-
-
-    /*  command line arg options
-        opts.string - a string or array of strings argument names to always treat as strings
-        opts.boolean - a boolean, string or array of strings to always treat as booleans. if true will treat all double hyphenated arguments without equal signs as boolean (e.g. affects --foo, not -f or --foo=bar)
-        opts.alias - an object mapping string names to strings or arrays of string argument names to use as aliases
-        opts.default - an object mapping string argument names to default values
-        opts.stopEarly - when true, populate argv._ with everything after the first non-option
-        opts['--'] - when true, populate argv._ with everything before the -- and argv['--'] with everything after the --. Here's an example:
-        opts.unknown - a function which is invoked with a command line parameter not defined in the opts configuration object. If the function returns false, the unknown option is not added to argv.
-    */
-
     var argArray = process.argv;
-    return buildOpts(argArray,argOpts);
+    return buildOpts(argArray,{});
 }
 
 
@@ -60,13 +19,30 @@ function getDateTimeForPath() {
     return now.getFullYear() + "" + (now.getMonth() + 1) + "" + now.getDate() + "-" + now.getHours() + "" + now.getMinutes() + "" + now.getSeconds();
 }
 
+
 function buildOpts(argv, argOpts){
+    var opts = {};
+    Object.assign(opts,argOpts);
+    var parsedArgs = commanderModule
+        .version("1.0.0")
+        .option("-p,--dir,--path <path>", "--path <path>",".")
+        .option("-n,--analysisName <name>", "--analysisName <name>","ASP-Analysis")
+        .option("-b,--before <name>","--before [name] ")
+        .option("-a, --after <name>","--after [name] ")
+        .option("-o, --output <path>"," output directory",defaultOutput)
+        .option("-s, --summary"," show summary")
+        .parse(process.argv);
     
-    var args = parseArgs(argv.slice(2), argOpts);
     
-    
-    
-    var pathArg = args.path;
+
+    var pathArg = parsedArgs.path || parsedArgs.dir;
+
+    parsedArgs.path = pathArg;
+    parsedArgs.dir = pathArg;
+
+
+    var args = {};
+    Object.assign(args,parsedArgs);
     if (!pathArg) {
         console.error("--path is required");
         return;
