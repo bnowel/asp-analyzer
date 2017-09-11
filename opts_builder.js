@@ -77,9 +77,7 @@ function buildOpts(argv, argOpts){
     if (outputArg == defaultOutput){
         outputArg = nodePath.join(nodeOs.homedir(),outputArg);
     }
-    
     var outputDir = nodePath.join(outputArg, getDateTimeForPath());
-    
     
     var outputOpts = {
         dir:pathArg,
@@ -91,11 +89,6 @@ function buildOpts(argv, argOpts){
         summary:argv.summary,
         warnings:argv.warnings
     };
-    
-    
-    
-    
-        
     
     
         //console.log(outputOpts)

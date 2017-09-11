@@ -272,13 +272,8 @@ var analyzeModule = function(incomingOpts) {
         }
         
         
-<<<<<<< HEAD
-                
 
         console.log("Analyzing: " + pathArg);
-
-=======
->>>>>>> i have no idea what I'm doing
         // Operate on analysisName
         var opts = {
             path: pathArg,
@@ -289,10 +284,7 @@ var analyzeModule = function(incomingOpts) {
         };
     
         await analyzeFiles(opts);
-<<<<<<< HEAD
-=======
-        
->>>>>>> i have no idea what I'm doing
+
             
     }
 
@@ -303,10 +295,15 @@ var analyzeModule = function(incomingOpts) {
         var afterArg = compareOpts.after;
         var pathArg = compareOpts.dir;
         var summaryArg = compareOpts.summary;
-<<<<<<< HEAD
         var warnings = compareOpts.warnings;
-=======
->>>>>>> i have no idea what I'm doing
+            var runAfterOpts = {
+                path: pathArg,
+                outputPath: afterPath,
+                analysisName: afterArg,
+                summary: false
+            };
+            var afterStats = await analyzeFiles(runAfterOpts);
+
         
         if (!fs.existsSync(outputDir)) {
             console.log("Creating output directory " + outputDir);
