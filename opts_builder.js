@@ -30,7 +30,8 @@ function buildOpts(argv, argOpts){
         .option("-b,--before <name>","--before [name] ")
         .option("-a, --after <name>","--after [name] ")
         .option("-o, --output <path>"," output directory",defaultOutput)
-        .option("-s, --summary"," show summary")
+        .option("-s, --summary"," show summary", true)
+        .option("-ws, --warnings"," show warnings", false)
         .parse(process.argv);
     
     
@@ -87,7 +88,8 @@ function buildOpts(argv, argOpts){
         after:afterArg,
         compare:hasBeforeAndAfterArgs,
         output:outputDir,
-        summary:args.summary
+        summary:argv.summary,
+        warnings:argv.warnings
     };
     
     

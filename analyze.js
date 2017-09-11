@@ -240,6 +240,7 @@ var analyzeModule = function(incomingOpts) {
         var pathArg = analysisOpts.dir;
         var analysisNameArg = analysisOpts.analysisName;
         var summaryArg = analysisOpts.summary;
+        var warnings = analysisOpts.warnings;
         
         if (!fs.existsSync(outputDir)) {
             console.log("Creating output directory " + outputDir);
@@ -252,7 +253,8 @@ var analyzeModule = function(incomingOpts) {
             path: pathArg,
             outputPath: outputDir,
             analysisName: analysisNameArg,
-            summary : summaryArg
+            summary : summaryArg,
+            warnings: warnings
         };
     
         await analyzeFiles(opts);
@@ -267,6 +269,7 @@ var analyzeModule = function(incomingOpts) {
         var afterArg = compareOpts.after;
         var pathArg = compareOpts.dir;
         var summaryArg = compareOpts.summary;
+        var warnings = compareOpts.warnings;
         
         if (!fs.existsSync(outputDir)) {
             console.log("Creating output directory " + outputDir);
@@ -290,7 +293,8 @@ var analyzeModule = function(incomingOpts) {
             path: pathArg,
             outputPath: beforePath,
             analysisName: beforeArg,
-            summary:false
+            summary:false,
+            warnings: warnings
         };
         var beforeStats = await analyzeFiles(runBeforeOpts);
 
