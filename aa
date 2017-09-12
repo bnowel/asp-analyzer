@@ -1,0 +1,84 @@
+#!/usr/bin/env node
+
+var program = require("commander");
+const analyzeModule = require("./lib/analyze.js")({});
+const nodeOs = require("os");
+const nodePath = require("path");
+
+const defaultName = "ASP-Analysis";
+const defaultDirectory = ".";
+const defaultOutput = "Desktop/asp-analyze";
+
+program
+    .version("1.0.0")
+    .option("-n,--analysisName <name>", "optional name for analysis. defaults to " + defaultName, defaultName)
+    .option("-o,--outputDir <dir>", "optional directory for output. defaults to ~/" + defaultOutput, getOutputDir , getOutputDir(defaultOutput))
+    .option("-s, --summary"," show summary ", true)
+    .option("-w, --warnings"," show warnings", false);
+
+var compareCmd = program
+    .command("compare <ref1> <ref2>");
+compareCmd
+    .option("-d,--dir <name>", "directory to analyze. defaults to " + defaultDirectory,defaultDirectory)
+    .description("compare two scans")
+    .action((arg1,arg2)=>{compare(arg1,arg2);});
+    
+
+//DEFINE SCAN
+var scanCmd = program
+    .command("scan [dir]");
+scanCmd
+    .description("scan and analyze directory")
+    .action((args)=>{scan(args);});
+
+program.parse(process.argv);
+
+
+
+//console.log(program);
+
+function scan(scanArgs){
+    var pathVal = scanArgs;
+    if (!pathVal){
+        pathVal = defaultDirectory;
+    }
+    
+    var analysisOpts = {
+        warnings        :   !!program.warnings,
+        summary         :   !!program.summary,
+        analysisName    :   program.analysisName,
+        output          :   program.outputDir,
+        dir             :   pathVal
+    };
+
+    analyzeModule.startAnalyze(analysisOpts);
+}
+
+function compare(ref1,ref2){
+    
+    var compareOpts = {
+        warnings        :   !!program.warnings,
+        summary         :   !!program.summary,
+        analysisName    :   program.analysisName,
+        output          :   program.outputDir,
+        dir             :   program.commands.find(x=>x._name=="compare").dir,
+        before          :   ref1,
+        after           :   ref2
+    };
+    
+    analyzeModule.startCompare(compareOpts);
+}
+
+function getDateTimeForPath() {
+    var now = new Date();
+    
+    return now.getFullYear() + "" + (now.getMonth() + 1) + "" + now.getDate() + "-" + now.getHours() + "" + now.getMinutes() + "" + now.getSeconds();
+}
+
+function getOutputDir(outputArg){
+    var outputVal = outputArg;
+    if (outputVal == defaultOutput || !outputVal){
+        outputVal = nodePath.join(nodeOs.homedir(),outputVal);
+    }
+    return nodePath.join(outputVal, getDateTimeForPath());
+}

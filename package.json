@@ -5,7 +5,8 @@
   "repository": {},
   "license": "MIT",
   "bin": {
-    "asp-analyze": "./start.js"
+    "asp-analyze": "./start.js",
+    "aa":"./aa"
   },
   "devDependencies": {},
   "main": "start.js",

@@ -34,6 +34,16 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Launch aa",
+            "program": "${workspaceRoot}/aa",
+            "args": ["compare","-d", "sfdghsdfghsdgh", "dsfgsdfg", "master"],
+            "windows": {
+                "args": ["--path", "sample_asp"]
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Launch builder",
             "program": "${workspaceRoot}/Scratch_Tests/opts_builder.js",
             "args": ["--dir", ".","--before" ,"asdfg ", "-w"],
