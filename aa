@@ -11,10 +11,10 @@ const defaultOutput = "Desktop/asp-analyze";
 
 program
     .version("1.0.0")
-    .option("-n,--analysisName <name>", "optional name for analysis. defaults to " + defaultName, defaultName)
-    .option("-o,--outputDir <dir>", "optional directory for output. defaults to ~/" + defaultOutput, getOutputDir , getOutputDir(defaultOutput))
-    .option("-s, --summary"," show summary ", true)
-    .option("-w, --warnings"," show warnings", false);
+    .option("-n, --analysisName <name>", "optional name for analysis. defaults to " + defaultName, defaultName)
+    .option("-o, --outputDir <dir>", "optional directory for output. defaults to ~/" + defaultOutput, getOutputDir , getOutputDir(defaultOutput))
+    .option("-s, --summary", "show summary ", true)
+    .option("-w, --warnings", "show warnings", false);
 
 var compareCmd = program
     .command("compare <ref1> <ref2>");
