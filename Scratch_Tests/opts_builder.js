@@ -1,4 +1,4 @@
-const optsBuilder = require("../opts_builder.js");
+const optsBuilder = require("../lib/opts_builder.js");
 
 
 console.log(optsBuilder.getOpts());
