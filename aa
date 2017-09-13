@@ -51,7 +51,7 @@ function scan(scanArgs){
         dir             :   pathVal
     };
 
-    analyzeModule.startAnalyze(analysisOpts);
+    analyzeModule.startScan(analysisOpts);
 }
 
 function compare(ref1,ref2){
