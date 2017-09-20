@@ -1,3 +1,3 @@
 var predictModule = require("../lib/predict.js")({});
-predictModule.predictFromFiles("/Users/clint.parker/Desktop/asp-analyze/2017913-8556/");
+predictModule.predictFromFiles("C:\\Users\\bernie.nowel\\Desktop\\asp-analyze\\2017913-125745\\");
 
