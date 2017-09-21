@@ -1,14 +1,17 @@
 {
   "name": "asp-analyzer",
   "version": "1.0.0",
-  "description": "TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project.",
-  "repository": {},
+  "description": "Find out just how bad your ASP include tree actually is.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bnowel/asp-analyzer.git"
+  },
   "license": "MIT",
   "bin": {
     "aa":"./aa"
   },
   "devDependencies": {},
-  "main": "start.js",
+  "main": "index.js",
   "dependencies": {
     "commander": "^2.11.0",
     "count-lines-in-file": "^1.1.0",
@@ -34,6 +37,7 @@
     "asp",
     "vbscript",
     "includes",
-    "include"
+    "include",
+    "vb"
   ]
 }
