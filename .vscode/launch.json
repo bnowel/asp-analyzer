@@ -36,7 +36,7 @@
             "request": "launch",
             "name": "Launch aa",
             "program": "${workspaceRoot}/aa",
-            "args": ["compare","-d", "sfdghsdfghsdgh", "dsfgsdfg", "master"],
+            "args": ["scan","/Users/clint.parker/Developer/Mindbody.Web.Clients/"],
             "windows": {
                 "args": ["--path", "sample_asp"]
             }
