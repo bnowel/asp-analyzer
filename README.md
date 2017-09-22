@@ -8,6 +8,9 @@ TODO: Guide users through getting your code up and running on their own system. 
 3.	Latest releases
 4.	API references
 
+# Random Stuff
+When trying to find and replace to remove include statements here is a good regex: `<!--\s+#include\s+file\s*=\s*"([^"]+)"\s+-->\s*\n`
+
 # Build and Test
 TODO: Describe and show how to build your code and run the tests. 
 

@@ -28,6 +28,8 @@ compareCmd
 var scanCmd = program
     .command("scan [dir]");
 scanCmd
+    .option("-k, --kpi", "output the kpi as a json object")
+    .option("-c, --openCsv", "open csv file on completion", false)
     .description("scan and analyze directory")
     .action((args)=>{scan(args);});
 
@@ -46,6 +48,7 @@ function scan(scanArgs){
     var analysisOpts = {
         warnings        :   !!program.warnings,
         summary         :   !!program.summary,
+        openCsv         :   !!program.commands.find(x=> x._name == "scan").openCsv,
         analysisName    :   program.analysisName,
         output          :   program.outputDir,
         dir             :   pathVal

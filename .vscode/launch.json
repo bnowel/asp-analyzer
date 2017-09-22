@@ -38,7 +38,7 @@
             "program": "${workspaceRoot}/aa",
             "args": ["scan","/Users/clint.parker/Developer/Mindbody.Web.Clients/"],
             "windows": {
-                "args": ["--path", "sample_asp"]
+                "args": ["scan", "c:\\iis\\wwwroot\\Applications\\Mindbody.Web.Clients\\Web", "--openCsv"]
             }
         },
         {
@@ -55,13 +55,13 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Compare",
-            "program": "${workspaceRoot}/start.js",
+            "program": "${workspaceRoot}/aa",
             "args": [
-                "--dir" ,"../Mindbody.Web.Clients/", "--before" ,"5bf47225739b6c512c274acd4a92106d732a37cd", "--after" ,"webconfigCleanup"
+                "compare", "--dir" ,"../Mindbody.Web.Clients/", "5bf47225739b6c512c274acd4a92106d732a37cd", "webconfigCleanup"
             ],
             "windows": {
                 //--path C:\iis\wwwroot\Applications\Mindbody.Web.Clients\ --before dev --after webconfigCleanup
-                "args": ["--path", "C:\\iis\\wwwroot\\Applications\\Mindbody.Web.Clients\\", "--before", "dev", "--after", "webconfigCleanup"]
+                "args": ["compare", "--dir", "C:\\iis\\wwwroot\\Applications\\Mindbody.Web.Clients\\", "5bf47225739b6c512c274acd4a92106d732a37cd", "webconfigCleanup"]
             }
         },
         {
