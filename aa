@@ -38,6 +38,7 @@ var compareCmd = program
     .command("compare <ref1> <ref2>");
 compareCmd
     .option("-d,--dir <name>", "directory to analyze. defaults to " + defaultDirectory,defaultDirectory)
+    .option("-c, --openCsv", "open csv file on completion", false)
     .description("compare two scans")
     .action((arg1,arg2)=>{compare(arg1,arg2);});
     
@@ -89,13 +90,15 @@ function scan(scanArgs){
 
 function compare(ref1,ref2){
     logger.warnings = !!program.warnings;
+    var compareCommands = program.commands.find(x=> x._name == "compare");
 
     var compareOpts = {
         warnings        :   !!program.warnings,
         summary         :   !!program.summary,
         analysisName    :   program.analysisName,
         output          :   program.outputDir,
-        dir             :   program.commands.find(x=>x._name=="compare").dir,
+        dir             :   compareCommands.dir,
+        openCsv         :   !!compareCommands.openCsv,
         before          :   ref1,
         after           :   ref2
     };
