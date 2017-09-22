@@ -1,13 +1,31 @@
 #!/usr/bin/env node
 
 var program = require("commander");
-const analyzeModule = require("./lib/analyze.js")({});
+const analyzeModule = require("./lib/analyze.js");
 const nodeOs = require("os");
 const nodePath = require("path");
+
+var logger = new function() {
+    this.showLogs = true;
+    this.warnings = false;
+
+    this.log = function() {
+        if (this.showLogs) {
+            console.log.apply(this, arguments);
+        }
+    }
+
+    this.warn = function() {
+        if (this.warnings) {
+            console.warn.apply(this, arguments);
+        }
+    }
+}();
 
 const defaultName = "ASP-Analysis";
 const defaultDirectory = ".";
 const defaultOutput = "Desktop/asp-analyze";
+
 
 program
     .version("1.0.0")
@@ -28,7 +46,7 @@ compareCmd
 var scanCmd = program
     .command("scan [dir]");
 scanCmd
-    .option("-k, --kpi", "output the kpi as a json object")
+    .option("-k, --kpi", "output the kpi as a json object. This will hide warnings.")
     .option("-c, --openCsv", "open csv file on completion", false)
     .description("scan and analyze directory")
     .action((args)=>{scan(args);});
@@ -44,21 +62,34 @@ function scan(scanArgs){
     if (!pathVal){
         pathVal = defaultDirectory;
     }
-    
+
+    var scanCommands = program.commands.find(x=> x._name == "scan");
+    if (scanCommands.kpi) 
+        logger.showLogs = false;
+
+    logger.warnings = !!program.warnings;
+
     var analysisOpts = {
         warnings        :   !!program.warnings,
         summary         :   !!program.summary,
-        openCsv         :   !!program.commands.find(x=> x._name == "scan").openCsv,
+        openCsv         :   !!scanCommands.openCsv,
         analysisName    :   program.analysisName,
         output          :   program.outputDir,
         dir             :   pathVal
     };
 
-    analyzeModule.startAnalyze(analysisOpts);
+    if (!!scanCommands.kpi) {
+        analyzeModule({logger: logger}).startKpiAnalyze(analysisOpts);
+    } else {
+        analyzeModule({logger: logger}).startAnalyze(analysisOpts);
+    }
+
+    
 }
 
 function compare(ref1,ref2){
-    
+    logger.warnings = !!program.warnings;
+
     var compareOpts = {
         warnings        :   !!program.warnings,
         summary         :   !!program.summary,
@@ -69,7 +100,7 @@ function compare(ref1,ref2){
         after           :   ref2
     };
     
-    analyzeModule.startCompare(compareOpts);
+    analyzeModule({logger: logger}).startCompare(compareOpts);
 }
 
 function getDateTimeForPath() {

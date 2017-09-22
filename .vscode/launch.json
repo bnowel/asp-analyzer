@@ -38,7 +38,7 @@
             "program": "${workspaceRoot}/aa",
             "args": ["scan","/Users/clint.parker/Developer/Mindbody.Web.Clients/"],
             "windows": {
-                "args": ["scan", "c:\\iis\\wwwroot\\Applications\\Mindbody.Web.Clients\\Web", "--openCsv"]
+                "args": ["scan", "c:\\iis\\wwwroot\\Applications\\Mindbody.Web.Clients\\Web", "--openCsv", "--kpi"]
             }
         },
         {
