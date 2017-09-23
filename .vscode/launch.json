@@ -36,7 +36,7 @@
             "request": "launch",
             "name": "Launch aa",
             "program": "${workspaceRoot}/aa",
-            "args": ["scan","/Users/clint.parker/Developer/Mindbody.Web.Clients/"],
+            "args": ["scan","-k","../Mindbody.Web.Clients/"],
             "windows": {
                 "args": ["scan", "c:\\iis\\wwwroot\\Applications\\Mindbody.Web.Clients\\Web", "--openCsv", "--kpi"]
             }

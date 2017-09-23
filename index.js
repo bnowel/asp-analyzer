@@ -1,5 +1,5 @@
 module.exports = function(opts){
-    var analyzeOpts = {}
+    var analyzeOpts = {};
     if (opts && opts.analyze){
         Object.assign(analyzeOpts,opts.analyze);
     }
