@@ -7,6 +7,9 @@
     "url": "https://github.com/bnowel/asp-analyzer.git"
   },
   "license": "MIT",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
   "bin": {
     "aa":"./aa"
   },
