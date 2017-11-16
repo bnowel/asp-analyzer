@@ -86,7 +86,7 @@ async function scan(scanArgs){
     var analysis = await analyzeModule({logger: logger}).startAnalyze(analysisOpts);
     
     if (analysisOpts.kpi){
-        console.log(analysis.kpis);
+        console.log(analysisOpts.kpis);
     }
     
 }
