@@ -1,49 +1,49 @@
 {
-  "name": "asp-analyzer",
-  "version": "1.0.2",
-  "description": "Find out just how bad your ASP include tree actually is.",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/bnowel/asp-analyzer.git"
-  },
-  "license": "MIT",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org"
-  },
-  "bin": {
-    "aa":"./aa"
-  },
-  "devDependencies": {},
-  "main": "index.js",
-  "dependencies": {
-    "commander": "^2.11.0",
-    "count-lines-in-file": "^1.1.0",
-    "firstline": "1.2.1",
-    "glob": "^7.1.2",
-    "grunt": "^0.4.5",
-    "grunt-concurrent": "^2.3.1",
-    "grunt-execute": "^0.2.2",
-    "jit-grunt": "^0.10.0",
-    "json2csv": "^3.11.1",
-    "load-grunt-config": "^0.19.2",
-    "load-grunt-tasks": "^3.5.2",
-    "minimist": "^1.2.0",
-    "minimist-options": "^3.0.2",
-    "mkdirp": "^0.5.1",
-    "prepend-file": "1.3.1",
-    "replace-in-file": "3.0.0-beta.2",
-    "rimraf": "^2.5.4",
-    "simple-git": "1.71.0"
-  },
-  "scripts": {
-    "test": "node ./tests/*.js"
-  },
-  "author": "bnowel",
-  "keywords": [
-    "asp",
-    "vbscript",
-    "includes",
-    "include",
-    "vb"
-  ]
+    "name": "asp-analyzer",
+    "version": "1.0.3",
+    "description": "Find out just how bad your ASP include tree actually is.",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/bnowel/asp-analyzer.git"
+    },
+    "license": "MIT",
+    "publishConfig": {
+        "registry": "https://registry.npmjs.org"
+    },
+    "bin": {
+        "aa": "./aa"
+    },
+    "devDependencies": {},
+    "main": "index.js",
+    "dependencies": {
+        "commander": "^2.11.0",
+        "count-lines-in-file": "^1.1.0",
+        "firstline": "1.2.1",
+        "glob": "^7.1.2",
+        "grunt": "^0.4.5",
+        "grunt-concurrent": "^2.3.1",
+        "grunt-execute": "^0.2.2",
+        "jit-grunt": "^0.10.0",
+        "json2csv": "^3.11.1",
+        "load-grunt-config": "^0.19.2",
+        "load-grunt-tasks": "^3.5.2",
+        "minimist": "^1.2.0",
+        "minimist-options": "^3.0.2",
+        "mkdirp": "^0.5.1",
+        "prepend-file": "1.3.1",
+        "replace-in-file": "3.0.0-beta.2",
+        "rimraf": "^2.5.4",
+        "simple-git": "1.71.0"
+    },
+    "scripts": {
+        "test": "node ./tests/*.js"
+    },
+    "author": "bnowel",
+    "keywords": [
+        "asp",
+        "vbscript",
+        "includes",
+        "include",
+        "vb"
+    ]
 }
