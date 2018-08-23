@@ -39,6 +39,9 @@
         "test": "node ./tests/*.js"
     },
     "author": "bnowel",
+    "contributors": [
+        "clintcparker"
+    ],
     "keywords": [
         "asp",
         "vbscript",
