@@ -38,7 +38,7 @@
             "program": "${workspaceRoot}/aa",
             "args": ["scan","-k","../Mindbody.Web.Clients/"],
             "windows": {
-                "args": ["scan", "c:\\iis\\wwwroot\\Applications\\Mindbody.Web.Clients\\",  "--kpi"]
+                "args": ["scan", "C:\\Code\\Mindbody.Web.Clients\\",  "--kpi"]
             }
         },
         {
