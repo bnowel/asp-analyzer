@@ -36,7 +36,7 @@
         "simple-git": "1.71.0"
     },
     "scripts": {
-        "test": "node ./tests/*.js"
+        "test": "node ./tests/transform_tree.js"
     },
     "author": "bnowel",
     "contributors": [

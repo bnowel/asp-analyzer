@@ -29,9 +29,38 @@ const expectedDictTree =
         }
     };
 
+    const expectedHierarchyDiagram = 
+`@startuml
+
+a1.asp <-- inc1.asp
+a1.asp <-- inc2.asp
+a1.asp <-- inc3.asp
+object a1.asp {
+    path: adm/a1.asp
+    lines: 12
+}
+
+inc1.asp <-- inc3.asp
+object inc1.asp {
+    path: inc1.asp
+    lines: 12
+}
 
 
-const treeModule = require("../transform_tree.js")({});
+object inc2.asp {
+    path: inc2.asp
+    lines: 12
+}
+
+
+object inc3.asp {
+    path: adm/inc3.asp
+    lines: 12
+}
+
+@enduml`;
+
+const treeModule = require("../lib/transform_tree.js")({});
 
 var actualTree = treeModule.buildDictTree(sampleStatsDict);
 
@@ -45,4 +74,5 @@ var expectedFlatTree = {"adm/inc3.asp":[],"inc1.asp":["adm/inc3.asp"],"inc2.asp"
 var expectedFlatTreeString = JSON.stringify(expectedFlatTree);
 var actualFlatTreeString = JSON.stringify(treeModule.flattenTree(actualTree));
 console.assert(expectedFlatTreeString == actualFlatTreeString);
+console.assert(expectedHierarchyDiagram === treeModule.buildHierarchyDiagram(sampleStatsDict));
 console.log("TREE TESTS PASSING");
