@@ -1,6 +1,6 @@
 {
     "name": "asp-analyzer",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "Find out just how bad your ASP include tree actually is.",
     "repository": {
         "type": "git",
